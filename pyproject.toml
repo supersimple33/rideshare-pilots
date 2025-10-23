@@ -6,6 +6,7 @@ readme = "README.md"
 authors = ["Addison Hanrattie"]
 requires-python = ">=3.14"
 dependencies = [
+    "annotated-types>=0.7.0",
     "gymnasium>=1.2.1",
     "numpy>=2.3.4",
 ]
