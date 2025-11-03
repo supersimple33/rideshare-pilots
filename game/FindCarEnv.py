@@ -106,16 +106,19 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         super().reset(seed=seed, options=options)
 
         self.grid.fill(Content.EMPTY)
-        total_cells = self.width * self.height
 
         # pick two distinct linear indices and convert to (x, y)
-        point_indexes = self.np_random.choice(total_cells, size=2, replace=False)
-        points_of_interest: PositionList = np.divmod(point_indexes, self.height)  # type: ignore
-        idx_agent, idx_target = points_of_interest[:2]
+        point_indexes = self.np_random.choice(
+            self.grid.size, size=2 + self.num_fake_targets, replace=False
+        )
+        points_of_interest: PositionList = np.column_stack(
+            np.divmod(point_indexes, self.height)
+        )
 
-        self.grid[idx_agent] = Content.AGENT
-        self.grid[idx_target] = Content.TARGET
-        self.grid[points_of_interest[2:]] = Content.FAKE_TARGET
+        agent_coords, target_coords = points_of_interest[:2]
+
+        self.grid[tuple(agent_coords)] = Content.AGENT
+        self.grid[tuple(target_coords)] = Content.TARGET
 
         self.obstacle_scheme.generate_obstacles(
             self.grid, points_of_interest, self.np_random
