@@ -34,6 +34,13 @@ class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
         height: H,
         obstacle_scheme: ObstacleGenerationScheme = NOOP_GENERATION_SCHEME,
     ):
+        """Initialize the FindCar environment.
+
+        Args:
+            width: The width of the grid.
+            height: The height of the grid.
+            obstacle_scheme: The obstacle generation scheme to use when generating the grid. Defaults to no obstacles.
+        """
         self.obstacle_scheme = obstacle_scheme
         self.width = width
         self.height = height
@@ -60,15 +67,28 @@ class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
 
         self.grid = np.empty((width, height), dtype=np.int8)  # type: ignore
 
-    def reset(self, seed: int | None = None) -> tuple[ObsType]:  # type: ignore
-        super().reset(seed=seed)
+    def reset(
+        self,
+        *,
+        seed: int | None = None,
+        options: dict[str, Any] | None = None,
+    ) -> tuple[ObsType[H, W], dict[str, None]]:
+        """Reset the environment to an initial state.
+
+        Args:
+            seed: An optional seed for the random number generator.
+            options: Additional options for resetting the environment.
+        Returns:
+            A tuple containing the initial observation and a blank dictionary.
+        """
+        super().reset(seed=seed, options=options)
 
         self.grid.fill(Contents.EMPTY.value)
         total_cells = self.width * self.height
 
         # pick two distinct linear indices and convert to (x, y)
-        points_of_interest = self.np_random.choice(total_cells, size=2, replace=False)
-        points_of_interest: PositionList = np.divmod(points_of_interest, self.height)  # type: ignore
+        point_indexes = self.np_random.choice(total_cells, size=2, replace=False)
+        points_of_interest: PositionList = np.divmod(point_indexes, self.height)  # type: ignore
         idx_agent, idx_target = points_of_interest[:2]
 
         self.grid[idx_agent] = Contents.AGENT.value
