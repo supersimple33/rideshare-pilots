@@ -11,10 +11,18 @@ PosInt: TypeAlias = Annotated[int, Gt(0)]
 
 
 class Directions(Enum):
-    UP = [np.int32(0), np.int32(1)]
-    DOWN = [np.int32(0), np.int32(-1)]
-    RIGHT = [np.int32(1), np.int32(0)]
-    LEFT = [np.int32(-1), np.int32(0)]
+    UP = (np.int32(0), np.int32(1))
+    DOWN = (np.int32(0), np.int32(-1))
+    RIGHT = (np.int32(1), np.int32(0))
+    LEFT = (np.int32(-1), np.int32(0))
+
+
+CARDINAL_DIRECTIONS = {
+    Directions.UP.value,
+    Directions.DOWN.value,
+    Directions.RIGHT.value,
+    Directions.LEFT.value,
+}
 
 
 class Contents(np.uint8, Flag):
