@@ -13,8 +13,8 @@ PositionList: TypeAlias = list[Location]
 
 
 class Direction(tuple[np.int32, np.int32], Enum):
-    UP = (np.int32(0), np.int32(1))
-    DOWN = (np.int32(0), np.int32(-1))
+    DOWN = (np.int32(0), np.int32(1))
+    UP = (np.int32(0), np.int32(-1))
     RIGHT = (np.int32(1), np.int32(0))
     LEFT = (np.int32(-1), np.int32(0))
 

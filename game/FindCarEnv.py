@@ -170,7 +170,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         Returns:
             A tuple containing the new observation, reward, done flag, truncated flag, and info dictionary.
         """
-        self.grid[self._agent_location] = Content.EMPTY
+        self.grid[tuple(self._agent_location)] = Content.EMPTY
         self._agent_location += action
 
         # check if the new position is valid
@@ -178,13 +178,13 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         if not (0 <= x < self.width and 0 <= y < self.height):
             return self.view(), -1.0, True, False, {"reason": "out_of_bounds"}
 
-        self.grid[self._agent_location] = Content.AGENT
         if self.grid[x, y] == Content.OBSTACLE:
             return self.view(), -1.0, True, False, {"reason": "hit_obstacle"}
         if self.grid[x, y] == Content.TARGET:
             return self.view(), 1.0, True, False, {"reason": "found_target"}
         if self.grid[x, y] == Content.FAKE_TARGET:
             return self.view(), -0.5, True, False, {"reason": "found_fake_target"}
+        self.grid[x, y] = Content.AGENT
         return self.view(), 0.0, False, False, {}
 
     def _render_console(self) -> None:
