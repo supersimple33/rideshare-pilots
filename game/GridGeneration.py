@@ -69,7 +69,7 @@ class DisjointBlobs(ObstacleGenerationScheme):
             attempts += 1
             start_idx = generator.integers(0, num_cells)
             x, y = np.divmod(start_idx, grid.shape[1])
-            if check_adj_empty(grid, x, y):
+            if not check_adj_empty(grid, x, y):
                 continue
 
             # setup tracking for the new blob
@@ -88,7 +88,7 @@ class DisjointBlobs(ObstacleGenerationScheme):
                 blob_checked.add((cx, cy))
 
                 # ensure the new cell is valid
-                if check_adj_empty(grid, cx, cy):
+                if not check_adj_empty(grid, cx, cy):
                     continue
 
                 # add the new cell to the blob

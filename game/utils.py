@@ -36,10 +36,10 @@ def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool:
     Returns:
         True if the cell and its adjacent cells are empty, False otherwise.
     """
-    return np.any(
+    return np.all(
         grid[
             max(0, x - 1) : min(grid.shape[0], x + 2),
             max(0, y - 1) : min(grid.shape[1], y + 2),
         ]
-        != Content.EMPTY
+        == Content.EMPTY
     )

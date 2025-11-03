@@ -113,17 +113,17 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self._agent_location = self.np_random.integers(
             low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
         )
-        self.grid[self._agent_location] = Content.AGENT
+        self.grid[tuple(self._agent_location)] = Content.AGENT
         # generate a random position for the target and ensure it is not adjacent to anything else
         while True:
             self._target_location = self.np_random.integers(
                 low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
             )
             x, y = self._target_location
-            if check_adj_empty(self.grid, x, y):
+            if not check_adj_empty(self.grid, x, y):
                 continue
             break
-        self.grid[self._target_location] = Content.TARGET
+        self.grid[tuple(self._target_location)] = Content.TARGET
         # generate fake target locations
         points_of_interest = [self._agent_location, self._target_location]
         for _ in range(self.num_fake_targets):
@@ -132,7 +132,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                     low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
                 )
                 x, y = fake_target_location
-                if check_adj_empty(self.grid, x, y):
+                if not check_adj_empty(self.grid, x, y):
                     continue
                 break
             self.grid[tuple(fake_target_location)] = Content.FAKE_TARGET
