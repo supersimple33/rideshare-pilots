@@ -8,6 +8,7 @@ from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
 from game.utils import Content, Direction, Location, NonNegInt, PosInt, check_adj_empty
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
+MAX_PLACEMENT_ATTEMPTS = 1000
 
 H = TypeVar("H", bound=PosInt)
 W = TypeVar("W", bound=PosInt)
@@ -115,12 +116,16 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         )
         self.grid[tuple(self._agent_location)] = Content.AGENT
         # generate a random position for the target and ensure it is not adjacent to anything else
+        i = 0
         while True:
             self._target_location = self.np_random.integers(
                 low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
             )
             x, y = self._target_location
+            if i >= MAX_PLACEMENT_ATTEMPTS:
+                raise RuntimeError("Failed to place target after maximum attempts")
             if not check_adj_empty(self.grid, x, y):
+                i += 1
                 continue
             break
         self.grid[tuple(self._target_location)] = Content.TARGET
@@ -132,7 +137,10 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                     low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
                 )
                 x, y = fake_target_location
+                if i >= MAX_PLACEMENT_ATTEMPTS:
+                    raise RuntimeError("Failed to place target after maximum attempts")
                 if not check_adj_empty(self.grid, x, y):
+                    i += 1
                     continue
                 break
             self.grid[tuple(fake_target_location)] = Content.FAKE_TARGET
