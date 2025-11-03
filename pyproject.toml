@@ -13,3 +13,8 @@ dependencies = [
 
 [tool.pyright]
 typeCheckingMode = "strict"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.1.0",
+]
