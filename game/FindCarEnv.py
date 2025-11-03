@@ -5,7 +5,7 @@ from gymnasium.spaces import Dict as DictSpace, MultiDiscrete, OneOf as OneOfSpa
 import numpy as np
 
 from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
-from game.utils import Content, Direction, Location, NonNegInt, PosInt, PositionList
+from game.utils import Content, Direction, Location, NonNegInt, PosInt, check_adj_empty
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
 
@@ -109,23 +109,39 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
 
         self.grid.fill(Content.EMPTY)
 
-        # pick two distinct linear indices and convert to (x, y)
-        point_indexes = self.np_random.choice(
-            self.grid.size, size=2 + self.num_fake_targets, replace=False
+        # generate a random position for the agent
+        self._agent_location = self.np_random.integers(
+            low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
         )
-        points_of_interest: PositionList = np.column_stack(
-            np.divmod(point_indexes, self.height)
-        )
-
-        agent_coords, target_coords = points_of_interest[:2]
-
-        self.grid[tuple(agent_coords)] = Content.AGENT
-        self.grid[tuple(target_coords)] = Content.TARGET
-        for fake_target_coords in points_of_interest[2:]:
-            self.grid[tuple(fake_target_coords)] = Content.FAKE_TARGET
+        self.grid[self._agent_location] = Content.AGENT
+        # generate a random position for the target and ensure it is not adjacent to anything else
+        while True:
+            self._target_location = self.np_random.integers(
+                low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
+            )
+            x, y = self._target_location
+            if check_adj_empty(self.grid, x, y):
+                continue
+            break
+        self.grid[self._target_location] = Content.TARGET
+        # generate fake target locations
+        points_of_interest = [self._agent_location, self._target_location]
+        for _ in range(self.num_fake_targets):
+            while True:
+                fake_target_location = self.np_random.integers(
+                    low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
+                )
+                x, y = fake_target_location
+                if check_adj_empty(self.grid, x, y):
+                    continue
+                break
+            self.grid[tuple(fake_target_location)] = Content.FAKE_TARGET
+            points_of_interest.append(fake_target_location)
 
         self.obstacle_scheme.generate_obstacles(
-            self.grid, points_of_interest, self.np_random
+            self.grid,
+            points_of_interest,
+            self.np_random,
         )
 
         return self.view(), {}

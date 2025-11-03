@@ -2,26 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from game.utils import Content, Direction, GridType, PositionList
-
-
-def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool:
-    """Check that the cell at (x, y) and its adjacent cells are empty.
-
-    Args:
-        grid: The grid to check.
-        x: The x coordinate of the cell.
-        y: The y coordinate of the cell.
-    Returns:
-        True if the cell and its adjacent cells are empty, False otherwise.
-    """
-    return np.any(
-        grid[
-            max(0, x - 1) : min(grid.shape[0], x + 2),
-            max(0, y - 1) : min(grid.shape[1], y + 2),
-        ]
-        != Content.EMPTY
-    )
+from game.utils import Content, Direction, GridType, PositionList, check_adj_empty
 
 
 class ObstacleGenerationScheme(ABC):
