@@ -4,13 +4,12 @@ from annotated_types import Gt
 import numpy as np
 
 GridType: TypeAlias = np.ndarray[tuple[int, int], np.dtype[np.uint8]]
-PositionList: TypeAlias = np.ndarray[
-    tuple[int, Literal[2]], np.dtype[np.int64 | np.int32]
-]
+PositionList: TypeAlias = np.ndarray[tuple[int, Literal[2]], np.dtype[np.int32]]
 PosInt: TypeAlias = Annotated[int, Gt(0)]
+Location: TypeAlias = np.ndarray[tuple[Literal[2]], np.dtype[np.int32]]
 
 
-class Direction(Enum):
+class Direction(tuple[np.int32, np.int32], Enum):
     UP = (np.int32(0), np.int32(1))
     DOWN = (np.int32(0), np.int32(-1))
     RIGHT = (np.int32(1), np.int32(0))

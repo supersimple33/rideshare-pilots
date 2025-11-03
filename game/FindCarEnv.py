@@ -1,22 +1,28 @@
-from typing import Generic, Literal, TypeAlias, TypeVar
+from typing import Any, Generic, TypeAlias, TypeVar, TypedDict
 
 import gymnasium as gym
 from gymnasium.spaces import Dict as DictSpace, MultiDiscrete, OneOf as OneOfSpace
 import numpy as np
 
 from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
-from game.utils import Contents, Direction, PosInt, PositionList
+from game.utils import Contents, Direction, Location, PosInt, PositionList
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
 
 H = TypeVar("H", bound=PosInt)
 W = TypeVar("W", bound=PosInt)
 
-ObsType: TypeAlias = dict[str, MultiDiscrete]
+
+class ObsType(TypedDict, Generic[H, W]):
+    agent_position: Location
+    target_position: Location
+    board: np.ndarray[tuple[W, H], np.dtype[np.uint8]]
+
+
 ActionType: TypeAlias = Direction
 
 
-class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
+class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
     """A mini grid environment. It can generate a different layout each time according to
     the generation method specified. The objective is to move an agent to the correct car
     which will all look identical to the agent until it is very close to it."""
@@ -25,8 +31,8 @@ class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
     height: H
     obstacle_scheme: ObstacleGenerationScheme
     grid: np.ndarray[tuple[W, H], np.dtype[np.uint8]]
-    _target_location: np.ndarray[tuple[Literal[2]], np.dtype[np.int32]]
-    _agent_location: np.ndarray[tuple[Literal[2]], np.dtype[np.int32]]
+    _target_location: Location
+    _agent_location: Location
 
     def __init__(
         self,
@@ -52,10 +58,12 @@ class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
             {
                 "agent_position": MultiDiscrete([width, height], dtype=np.int32),
                 "target_position": MultiDiscrete([width, height], dtype=np.int32),
-                "board": MultiDiscrete(3 * np.ones((width, height), dtype=np.uint8)),
+                "board": MultiDiscrete(
+                    np.ones_like((width, height), dtype=np.int32) * len(Contents),
+                    dtype=np.uint8,
+                ),
             }
-        )
-        # [0,1] , [0,-1]. [1,0], [-1,0]
+        )  # type: ignore
         self.action_space = OneOfSpace(
             [
                 MultiDiscrete(Direction.UP.value),  # type: ignore
@@ -66,6 +74,18 @@ class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
         )
 
         self.grid = np.empty((width, height), dtype=np.int8)  # type: ignore
+
+    def view(self) -> ObsType[H, W]:
+        """Get the current observation of the environment.
+
+        Returns:
+            The current observation as a dictionary.
+        """
+        return {
+            "agent_position": self._agent_location,
+            "target_position": self._target_location,
+            "board": self.grid,
+        }
 
     def reset(
         self,
@@ -99,3 +119,4 @@ class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
             self.grid, points_of_interest, self.np_random
         )
 
+        return self.view(), {}
