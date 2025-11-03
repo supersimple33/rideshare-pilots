@@ -5,7 +5,7 @@ from gymnasium.spaces import Dict as DictSpace, MultiDiscrete, OneOf as OneOfSpa
 import numpy as np
 
 from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
-from game.utils import Content, Direction, Location, PosInt, PositionList
+from game.utils import Content, Direction, Location, NonNegInt, PosInt, PositionList
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
 
@@ -38,6 +38,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self,
         width: W,
         height: H,
+        num_fake_targets: NonNegInt = 0,
         obstacle_scheme: ObstacleGenerationScheme = NOOP_GENERATION_SCHEME,
         render_mode: str | None = None,
     ):
@@ -52,6 +53,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self.width = width
         self.height = height
         self.render_mode = render_mode
+        self.num_fake_targets = num_fake_targets
 
         self._agent_location = np.array([-1, -1], dtype=np.int32)
         self._target_location = np.array([-1, -1], dtype=np.int32)
@@ -119,6 +121,8 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
 
         self.grid[tuple(agent_coords)] = Content.AGENT
         self.grid[tuple(target_coords)] = Content.TARGET
+        for fake_target_coords in points_of_interest[2:]:
+            self.grid[tuple(fake_target_coords)] = Content.FAKE_TARGET
 
         self.obstacle_scheme.generate_obstacles(
             self.grid, points_of_interest, self.np_random
