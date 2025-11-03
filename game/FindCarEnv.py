@@ -61,17 +61,17 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                 "agent_position": MultiDiscrete([width, height], dtype=np.int32),
                 "target_position": MultiDiscrete([width, height], dtype=np.int32),
                 "board": MultiDiscrete(
-                    np.ones_like((width, height), dtype=np.int32) * len(Contents),
+                    np.full((width, height), len(Content)),
                     dtype=np.uint8,
                 ),
             }
         )  # type: ignore
         self.action_space = OneOfSpace(
             [
-                MultiDiscrete(Direction.UP),  # type: ignore
-                MultiDiscrete(Direction.DOWN),  # type: ignore
-                MultiDiscrete(Direction.RIGHT),  # type: ignore
-                MultiDiscrete(Direction.LEFT),  # type: ignore
+                MultiDiscrete(np.ones((2,)), start=Direction.UP),  # type: ignore
+                MultiDiscrete(np.ones((2,)), start=Direction.DOWN),  # type: ignore
+                MultiDiscrete(np.ones((2,)), start=Direction.RIGHT),  # type: ignore
+                MultiDiscrete(np.ones((2,)), start=Direction.LEFT),  # type: ignore
             ]
         )
 
