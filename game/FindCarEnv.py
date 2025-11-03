@@ -1,11 +1,19 @@
 from typing import Any, Generic, TypeAlias, TypeVar, TypedDict
 
 import gymnasium as gym
-from gymnasium.spaces import Dict as DictSpace, MultiDiscrete, OneOf as OneOfSpace
+from gymnasium.spaces import Dict as DictSpace, MultiDiscrete
 import numpy as np
 
 from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
-from game.utils import Content, Direction, Location, NonNegInt, PosInt, check_adj_empty
+from game.utils import (
+    Content,
+    Direction,
+    FiniteSet,
+    Location,
+    NonNegInt,
+    PosInt,
+    check_adj_empty,
+)
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
 MAX_PLACEMENT_ATTEMPTS = 1000
@@ -68,17 +76,14 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                     dtype=np.uint8,
                 ),
             }
-        )  # type: ignore
-        self.action_space = OneOfSpace(
-            [
-                MultiDiscrete(np.ones((2,)), start=Direction.UP),  # type: ignore
-                MultiDiscrete(np.ones((2,)), start=Direction.DOWN),  # type: ignore
-                MultiDiscrete(np.ones((2,)), start=Direction.RIGHT),  # type: ignore
-                MultiDiscrete(np.ones((2,)), start=Direction.LEFT),  # type: ignore
-            ]
+        )  # pyright: ignore[reportAttributeAccessIssue]
+        self.action_space = FiniteSet(
+            [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
         )
 
-        self.grid = np.empty((width, height), dtype=np.int8)  # type: ignore
+        self.grid = np.empty(
+            (width, height), dtype=np.int8
+        )  # pyright: ignore[reportAttributeAccessIssue]
 
     def view(self) -> ObsType[H, W]:
         """Get the current observation of the environment.
