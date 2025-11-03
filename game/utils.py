@@ -16,14 +16,6 @@ class Direction(tuple[np.int32, np.int32], Enum):
     LEFT = (np.int32(-1), np.int32(0))
 
 
-CARDINAL_DIRECTIONS = {
-    Direction.UP.value,
-    Direction.DOWN.value,
-    Direction.RIGHT.value,
-    Direction.LEFT.value,
-}
-
-
 class Contents(np.uint8, Flag):
     EMPTY = auto()
     OBSTACLE = auto()

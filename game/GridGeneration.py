@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from game.utils import CARDINAL_DIRECTIONS, Contents, GridType, PositionList
+from game.utils import Contents, Direction, GridType, PositionList
 
 
 def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool:
@@ -96,7 +96,7 @@ class DisjointBlobs(ObstacleGenerationScheme):
             blob_checked = set(blob_area)
             blob_frontier: list[tuple[np.integer, np.integer]] = [
                 (x + x_nudge, y + y_nudge)
-                for x_nudge, y_nudge in CARDINAL_DIRECTIONS
+                for x_nudge, y_nudge in Direction
                 if 0 <= x + x_nudge < grid.shape[0] and 0 <= y + y_nudge < grid.shape[1]
             ]
             blob_size = 1
@@ -115,7 +115,7 @@ class DisjointBlobs(ObstacleGenerationScheme):
                 blob_size += 1
 
                 # expand the frontier
-                for x_nudge, y_nudge in CARDINAL_DIRECTIONS:
+                for x_nudge, y_nudge in Direction:
                     nx, ny = cx + x_nudge, cy + y_nudge
                     if (
                         0 <= nx < grid.shape[0]
