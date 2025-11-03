@@ -120,3 +120,31 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         )
 
         return self.view(), {}
+
+    def step(
+        self, action: ActionType
+    ) -> tuple[ObsType[H, W], float, bool, bool, dict[str, str]]:
+        """Take a step in the environment.
+
+        Args:
+            action: The action to take.
+
+        Returns:
+            A tuple containing the new observation, reward, done flag, truncated flag, and info dictionary.
+        """
+        self.grid[self._agent_location] = Contents.EMPTY
+        self._agent_location += action
+
+        # check if the new position is valid
+        x, y = self._agent_location
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            return self.view(), -1.0, True, False, {"reason": "out_of_bounds"}
+
+        self.grid[self._agent_location] = Contents.AGENT
+        if self.grid[x, y] == Contents.OBSTACLE:
+            return self.view(), -1.0, True, False, {"reason": "hit_obstacle"}
+        if self.grid[x, y] == Contents.TARGET:
+            return self.view(), 1.0, True, False, {"reason": "found_target"}
+        if self.grid[x, y] == Contents.FAKE_TARGET:
+            return self.view(), -0.5, True, False, {"reason": "found_fake_target"}
+        return self.view(), 0.0, False, False, {}
