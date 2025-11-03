@@ -39,6 +39,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         width: W,
         height: H,
         obstacle_scheme: ObstacleGenerationScheme = NOOP_GENERATION_SCHEME,
+        render_mode: str | None = None,
     ):
         """Initialize the FindCar environment.
 
@@ -50,6 +51,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self.obstacle_scheme = obstacle_scheme
         self.width = width
         self.height = height
+        self.render_mode = render_mode
 
         self._agent_location = np.array([-1, -1], dtype=np.int32)
         self._target_location = np.array([-1, -1], dtype=np.int32)
@@ -148,3 +150,32 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         if self.grid[x, y] == Contents.FAKE_TARGET:
             return self.view(), -0.5, True, False, {"reason": "found_fake_target"}
         return self.view(), 0.0, False, False, {}
+
+    def _render_console(self) -> None:
+        """Render the current state of the environment to the console."""
+        content_symbols = {
+            Contents.EMPTY: ".",
+            Contents.OBSTACLE: "#",
+            Contents.TARGET: "T",
+            Contents.FAKE_TARGET: "F",
+            Contents.AGENT: "A",
+        }
+        for y in range(self.height):
+            row = "".join(
+                content_symbols.get(self.grid[x, y], "?") + " "
+                for x in range(self.width)
+            )
+            print(row)
+        print()
+
+    def render(self) -> None:
+        """Render the environment."""
+        match self.render_mode:
+            case "console":
+                self._render_console()
+            case None:
+                pass
+            case _:
+                raise NotImplementedError(
+                    f"Render mode {self.render_mode} is not implemented."
+                )

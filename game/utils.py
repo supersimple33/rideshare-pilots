@@ -1,5 +1,6 @@
 from enum import Enum, Flag, auto
 from typing import Annotated, Literal, TypeAlias
+
 from annotated_types import Gt
 import numpy as np
 
