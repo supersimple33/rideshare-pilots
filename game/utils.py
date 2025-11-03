@@ -1,9 +1,12 @@
 from enum import Enum, Flag, auto
-from typing import Annotated, TypeAlias
+from typing import Annotated, Literal, TypeAlias
 from annotated_types import Gt
 import numpy as np
 
 GridType: TypeAlias = np.ndarray[tuple[int, int], np.dtype[np.uint8]]
+PositionList: TypeAlias = np.ndarray[
+    tuple[int, Literal[2]], np.dtype[np.int64 | np.int32]
+]
 PosInt: TypeAlias = Annotated[int, Gt(0)]
 
 
