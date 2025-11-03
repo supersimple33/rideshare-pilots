@@ -5,7 +5,7 @@ from gymnasium.spaces import Dict as DictSpace, MultiDiscrete, OneOf as OneOfSpa
 import numpy as np
 
 from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
-from game.utils import Contents, Direction, Location, PosInt, PositionList
+from game.utils import Content, Direction, Location, PosInt, PositionList
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
 
@@ -105,7 +105,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         """
         super().reset(seed=seed, options=options)
 
-        self.grid.fill(Contents.EMPTY)
+        self.grid.fill(Content.EMPTY)
         total_cells = self.width * self.height
 
         # pick two distinct linear indices and convert to (x, y)
@@ -113,9 +113,9 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         points_of_interest: PositionList = np.divmod(point_indexes, self.height)  # type: ignore
         idx_agent, idx_target = points_of_interest[:2]
 
-        self.grid[idx_agent] = Contents.AGENT
-        self.grid[idx_target] = Contents.TARGET
-        self.grid[points_of_interest[2:]] = Contents.FAKE_TARGET
+        self.grid[idx_agent] = Content.AGENT
+        self.grid[idx_target] = Content.TARGET
+        self.grid[points_of_interest[2:]] = Content.FAKE_TARGET
 
         self.obstacle_scheme.generate_obstacles(
             self.grid, points_of_interest, self.np_random
@@ -134,7 +134,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         Returns:
             A tuple containing the new observation, reward, done flag, truncated flag, and info dictionary.
         """
-        self.grid[self._agent_location] = Contents.EMPTY
+        self.grid[self._agent_location] = Content.EMPTY
         self._agent_location += action
 
         # check if the new position is valid
@@ -142,23 +142,23 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         if not (0 <= x < self.width and 0 <= y < self.height):
             return self.view(), -1.0, True, False, {"reason": "out_of_bounds"}
 
-        self.grid[self._agent_location] = Contents.AGENT
-        if self.grid[x, y] == Contents.OBSTACLE:
+        self.grid[self._agent_location] = Content.AGENT
+        if self.grid[x, y] == Content.OBSTACLE:
             return self.view(), -1.0, True, False, {"reason": "hit_obstacle"}
-        if self.grid[x, y] == Contents.TARGET:
+        if self.grid[x, y] == Content.TARGET:
             return self.view(), 1.0, True, False, {"reason": "found_target"}
-        if self.grid[x, y] == Contents.FAKE_TARGET:
+        if self.grid[x, y] == Content.FAKE_TARGET:
             return self.view(), -0.5, True, False, {"reason": "found_fake_target"}
         return self.view(), 0.0, False, False, {}
 
     def _render_console(self) -> None:
         """Render the current state of the environment to the console."""
         content_symbols = {
-            Contents.EMPTY: ".",
-            Contents.OBSTACLE: "#",
-            Contents.TARGET: "T",
-            Contents.FAKE_TARGET: "F",
-            Contents.AGENT: "A",
+            Content.EMPTY: ".",
+            Content.OBSTACLE: "#",
+            Content.TARGET: "T",
+            Content.FAKE_TARGET: "F",
+            Content.AGENT: "A",
         }
         for y in range(self.height):
             row = "".join(

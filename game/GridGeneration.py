@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from game.utils import Contents, Direction, GridType, PositionList
+from game.utils import Content, Direction, GridType, PositionList
 
 
 def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool:
@@ -20,7 +20,7 @@ def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool:
             max(0, x - 1) : min(grid.shape[0], x + 2),
             max(0, y - 1) : min(grid.shape[1], y + 2),
         ]
-        != Contents.EMPTY
+        != Content.EMPTY
     )
 
 
@@ -126,4 +126,4 @@ class DisjointBlobs(ObstacleGenerationScheme):
 
             # when we are done growing the blob, mark it on the grid
             for bx, by in blob_area:
-                grid[bx, by] = Contents.OBSTACLE
+                grid[bx, by] = Content.OBSTACLE
