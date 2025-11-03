@@ -10,7 +10,7 @@ PositionList: TypeAlias = np.ndarray[
 PosInt: TypeAlias = Annotated[int, Gt(0)]
 
 
-class Directions(Enum):
+class Direction(Enum):
     UP = (np.int32(0), np.int32(1))
     DOWN = (np.int32(0), np.int32(-1))
     RIGHT = (np.int32(1), np.int32(0))
@@ -18,10 +18,10 @@ class Directions(Enum):
 
 
 CARDINAL_DIRECTIONS = {
-    Directions.UP.value,
-    Directions.DOWN.value,
-    Directions.RIGHT.value,
-    Directions.LEFT.value,
+    Direction.UP.value,
+    Direction.DOWN.value,
+    Direction.RIGHT.value,
+    Direction.LEFT.value,
 }
 
 

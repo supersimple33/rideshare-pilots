@@ -5,7 +5,7 @@ from gymnasium.spaces import Dict as DictSpace, MultiDiscrete, OneOf as OneOfSpa
 import numpy as np
 
 from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
-from game.utils import Contents, Directions, PosInt, PositionList
+from game.utils import Contents, Direction, PosInt, PositionList
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
 
@@ -13,7 +13,7 @@ H = TypeVar("H", bound=PosInt)
 W = TypeVar("W", bound=PosInt)
 
 ObsType: TypeAlias = dict[str, MultiDiscrete]
-ActionType: TypeAlias = Directions
+ActionType: TypeAlias = Direction
 
 
 class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
@@ -51,10 +51,10 @@ class FindCarEnv(gym.Env[ObsType, ActionType], Generic[H, W]):
         # [0,1] , [0,-1]. [1,0], [-1,0]
         self.action_space = OneOfSpace(
             [
-                MultiDiscrete(Directions.UP.value),  # type: ignore
-                MultiDiscrete(Directions.DOWN.value),  # type: ignore
-                MultiDiscrete(Directions.RIGHT.value),  # type: ignore
-                MultiDiscrete(Directions.LEFT.value),  # type: ignore
+                MultiDiscrete(Direction.UP.value),  # type: ignore
+                MultiDiscrete(Direction.DOWN.value),  # type: ignore
+                MultiDiscrete(Direction.RIGHT.value),  # type: ignore
+                MultiDiscrete(Direction.LEFT.value),  # type: ignore
             ]
         )
 
