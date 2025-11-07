@@ -24,7 +24,6 @@ W = TypeVar("W", bound=PosInt)
 
 class ObsType(TypedDict, Generic[H, W]):
     agent_position: Location
-    target_position: Location
     board: np.ndarray[tuple[W, H], np.dtype[np.uint8]]
 
 
@@ -70,7 +69,6 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self.observation_space = DictSpace(
             {
                 "agent_position": MultiDiscrete([width, height], dtype=np.int32),
-                "target_position": MultiDiscrete([width, height], dtype=np.int32),
                 "board": MultiDiscrete(
                     np.full((width, height), len(Content)),
                     dtype=np.uint8,
@@ -93,7 +91,6 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         """
         return {
             "agent_position": self._agent_location,
-            "target_position": self._target_location,
             "board": self.grid,
         }
 
