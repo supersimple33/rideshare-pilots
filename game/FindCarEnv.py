@@ -80,7 +80,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         )
 
         self.grid = np.empty(
-            (width, height), dtype=np.int8
+            (height, width), dtype=np.int8
         )  # pyright: ignore[reportAttributeAccessIssue]
 
     def view(self) -> ObsType[H, W]:
@@ -195,7 +195,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         }
         for y in range(self.height):
             row = "".join(
-                content_symbols.get(self.grid[x, y], "?") + " "
+                content_symbols.get(self.grid[y, x], "?") + " "
                 for x in range(self.width)
             )
             print(row)
