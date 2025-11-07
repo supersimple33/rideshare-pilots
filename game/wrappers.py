@@ -9,8 +9,13 @@ from game.utils import Content, Location, PosInt, content_to_one_hot, window_at
 N = TypeVar("N", bound=PosInt)
 
 
+class OneHotObsType(TypedDict, Generic[H, W]):
+    agent_position: Location
+    board: np.ndarray[tuple[W, H, PosInt], np.dtype[np.uint8]]
+
+
 def local_view_wrapper(
-    width: H, height: W, n: N  # pyright: ignore[reportInvalidTypeVarUse]
+    obs_space: DictSpace, n: N  # pyright: ignore[reportInvalidTypeVarUse]
 ):
     """Gets a wrapper that converts observations to a local view of NxN centered on the agent."""
 
@@ -27,6 +32,8 @@ def local_view_wrapper(
             ),
         }
 
+    board_space: MultiDiscrete = obs_space["board"]  # type: ignore
+    width, height = board_space.shape
     obs_space = DictSpace(
         {
             "agent_position": MultiDiscrete([width, height], dtype=np.int32),
