@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import Annotated, Generic, Literal, TypeAlias, TypeVar
+from typing import Annotated, Generic, Literal, TypeAlias, TypeVar, Iterator, Optional
 
 from annotated_types import Gt, Ge
 import numpy as np
@@ -90,3 +90,69 @@ def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool:
         ]
         == Content.EMPTY
     )
+
+
+class RandomSet(Generic[T]):
+    """A set supporting O(1) add, remove, contains, and random-pop using a NumPy RNG."""
+
+    def __init__(
+        self,
+        iterable: Optional[Iterator[T]] = None,
+        rng: Optional[np.random.Generator] = None,
+    ) -> None:
+        self.data: dict[T, int] = {}
+        self.items: list[T] = []
+        self.rng: np.random.Generator = (
+            np.random.default_rng(42) if rng is None else rng
+        )
+        if iterable is not None:
+            for val in iterable:
+                self.add(val)
+
+    def add(self, val: T) -> None:
+        if val not in self.data:
+            self.data[val] = len(self.items)
+            self.items.append(val)
+
+    def remove(self, val: T) -> None:
+        """Remove val, raising KeyError if not present."""
+        if val not in self.data:
+            raise KeyError(val)
+        idx = self.data.pop(val)
+        last = self.items.pop()
+        if idx < len(self.items):
+            self.items[idx] = last
+            self.data[last] = idx
+
+    def discard(self, val: T) -> None:
+        """Remove val if present; do nothing otherwise."""
+        if val in self.data:
+            self.remove(val)
+
+    def pop_random(self) -> T:
+        """Pop and return a random element in O(1)."""
+        if not self.items:
+            raise KeyError("pop from empty set")
+        idx = int(self.rng.integers(len(self.items)))
+        val = self.items[idx]
+        self.remove(val)
+        return val
+
+    def random(self) -> T:
+        """Return a random element without removing it."""
+        if not self.items:
+            raise KeyError("sample from empty set")
+        idx = int(self.rng.integers(len(self.items)))
+        return self.items[idx]
+
+    def __contains__(self, val: object) -> bool:
+        return val in self.data
+
+    def __len__(self) -> int:
+        return len(self.items)
+
+    def __iter__(self) -> Iterator[T]:
+        return iter(self.items)
+
+    def __repr__(self) -> str:
+        return f"RandomSet({{{', '.join(map(repr, self.items))}}})"
