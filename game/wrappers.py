@@ -46,3 +46,27 @@ def local_view_wrapper(
 
     return wrapper, obs_space
 
+
+def one_hot_wrapper(obs_space: DictSpace):  # pyright: ignore[reportInvalidTypeVarUse]
+    """Gets a wrapper that converts observations to one-hot encoding."""
+
+    def wrapper(observation: ObsType[H, W]) -> OneHotObsType[H, W]:
+        """A wrapper to convert observations to one-hot encoding."""
+        return {
+            "agent_position": observation["agent_position"],
+            "board": content_to_one_hot(observation["board"]),
+        }
+
+    board_space: MultiDiscrete = obs_space["board"]  # type: ignore
+    width, height = board_space.shape
+    obs_space = DictSpace(
+        {
+            "agent_position": MultiDiscrete([width, height], dtype=np.int32),
+            "board": MultiDiscrete(
+                np.full((width, height, len(Content)), 2),
+                dtype=np.uint8,
+            ),
+        }
+    )
+
+    return wrapper, obs_space
