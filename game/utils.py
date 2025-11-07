@@ -29,6 +29,7 @@ class Content(np.uint8, Enum):
     TARGET = auto()
     FAKE_TARGET = auto()
     AGENT = auto()
+    Border = auto()
 
 
 def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool_:
