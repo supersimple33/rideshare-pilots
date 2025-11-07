@@ -1,17 +1,16 @@
-from typing import TypeVar
+from typing import Generic, TypeVar, TypedDict
 
 from gymnasium.spaces import Dict as DictSpace, MultiDiscrete
-from gymnasium.wrappers import TransformObservation as TransformObservationWrapper
 import numpy as np
 
-from game.FindCarEnv import ObsType, FindCarEnv, H, W
-from game.utils import Content, PosInt, window_at
+from game.FindCarEnv import ObsType, H, W
+from game.utils import Content, Location, PosInt, content_to_one_hot, window_at
 
 N = TypeVar("N", bound=PosInt)
 
 
 def local_view_wrapper(
-    env: FindCarEnv[H, W], n: N  # pyright: ignore[reportInvalidTypeVarUse]
+    width: H, height: W, n: N  # pyright: ignore[reportInvalidTypeVarUse]
 ):
     """Gets a wrapper that converts observations to a local view of NxN centered on the agent."""
 
@@ -30,7 +29,7 @@ def local_view_wrapper(
 
     obs_space = DictSpace(
         {
-            "agent_position": MultiDiscrete([env.width, env.height], dtype=np.int32),
+            "agent_position": MultiDiscrete([width, height], dtype=np.int32),
             "board": MultiDiscrete(
                 np.full((n, n), len(Content)),
                 dtype=np.uint8,
@@ -38,4 +37,5 @@ def local_view_wrapper(
         }
     )
 
-    return TransformObservationWrapper(env, wrapper, obs_space)
+    return wrapper, obs_space
+
