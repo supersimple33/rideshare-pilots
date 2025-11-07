@@ -11,6 +11,10 @@ NonNegInt: TypeAlias = Annotated[int, Ge(0)]
 Location: TypeAlias = np.ndarray[tuple[Literal[2]], np.dtype[np.int32]]
 PositionList: TypeAlias = list[Location]
 
+T = TypeVar("T")
+K = TypeVar("K", bound=PosInt)
+DT = TypeVar("DT", bound=np.generic)
+
 
 class Direction(tuple[np.int32, np.int32], Enum):
     DOWN = (np.int32(0), np.int32(1))
@@ -27,53 +31,7 @@ class Content(np.uint8, Enum):
     AGENT = auto()
 
 
-T = TypeVar("T")
-
-
-class FiniteSet(Space[T], Generic[T]):
-    """A Gym space representing a finite set of allowed (immutable) actions."""
-
-    n: PosInt
-    elements: list[T]
-
-    def __init__(self, elements: list[T], seed: int | None = None):
-        # elements: shape (N, d); dtype is enforced for actions
-        assert elements, "FiniteSet must have at least one element."
-        self.elements = elements
-        super().__init__(
-            shape=elements[0].shape if hasattr(elements[0], "shape") else (1,),  # type: ignore
-            dtype=type(elements[0]),
-            seed=seed,
-        )
-
-    def sample(
-        self,
-        mask: np.ndarray[tuple[int], np.dtype[np.int8]] | None = None,
-        probability: np.ndarray[tuple[int], np.dtype[np.float64]] | None = None,
-    ) -> T:
-        if mask is not None and probability is not None:
-            raise ValueError("Cannot use both mask and probability for sampling.")
-
-        chosen_index: int | np.int64
-        if mask is not None:
-            valid_indices = np.nonzero(mask)[0]
-            chosen_index = self.np_random.choice(valid_indices)
-            return self.elements[chosen_index]
-        if probability is not None:
-            if np.sum(probability) != 1.0:
-                raise ValueError("Probability distribution must sum to 1.")
-            probability = probability / np.sum(probability)
-            chosen_index = self.np_random.choice(self.n, p=probability)
-            return self.elements[chosen_index]
-
-        chosen_index = self.np_random.integers(0, len(self.elements))
-        return self.elements[chosen_index]
-
-    def contains(self, x: T) -> bool:
-        return x in self.elements
-
-
-def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool:
+def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool_:
     """Check that the cell at (x, y) and its adjacent cells are empty.
 
     Args:
@@ -90,6 +48,47 @@ def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool:
         ]
         == Content.EMPTY
     )
+
+
+def window_at(
+    a: np.ndarray[tuple[PosInt, PosInt], np.dtype[DT]],
+    loc: Location,
+    k: K,
+    pad_value: DT,
+) -> np.ndarray[tuple[K, K], np.dtype[DT]]:
+    """Return a k×k window centered at (i, j) with zero-padding as needed.
+
+    The return array is annotated to have the same dtype as the input array.
+    """
+    assert k > 0, "k must be positive"
+    i, j = loc
+    n, m = a.shape
+    half = k // 2
+
+    # Compute actual slice bounds (clamped to valid region)
+    i0 = max(i - half, 0)
+    i1 = min(i + half + 1, n)
+    j0 = max(j - half, 0)
+    j1 = min(j + half + 1, m)
+
+    # Extract visible subarray
+    view = a[i0:i1, j0:j1]
+
+    # Fast path: fully inside boundaries
+    if view.shape == (k, k):
+        return view
+
+    # Otherwise, pad manually into k×k output
+    out: np.ndarray[tuple[K, K], np.dtype[DT]]
+    out = np.full(
+        (k, k), pad_value, dtype=a.dtype
+    )  # pyright: ignore[reportAssignmentType]
+
+    # Compute placement inside padded output
+    top = half - (i - i0)
+    left = half - (j - j0)
+    out[top : top + view.shape[0], left : left + view.shape[1]] = view
+    return out
 
 
 class RandomSet(Generic[T]):
@@ -156,3 +155,46 @@ class RandomSet(Generic[T]):
 
     def __repr__(self) -> str:
         return f"RandomSet({{{', '.join(map(repr, self.items))}}})"
+
+
+class FiniteSet(Space[T], Generic[T]):
+    """A Gym space representing a finite set of allowed (immutable) actions."""
+
+    n: PosInt
+    elements: list[T]
+
+    def __init__(self, elements: list[T], seed: int | None = None):
+        # elements: shape (N, d); dtype is enforced for actions
+        assert elements, "FiniteSet must have at least one element."
+        self.elements = elements
+        super().__init__(
+            shape=elements[0].shape if hasattr(elements[0], "shape") else (1,),  # type: ignore
+            dtype=type(elements[0]),
+            seed=seed,
+        )
+
+    def sample(
+        self,
+        mask: np.ndarray[tuple[int], np.dtype[np.int8]] | None = None,
+        probability: np.ndarray[tuple[int], np.dtype[np.float64]] | None = None,
+    ) -> T:
+        if mask is not None and probability is not None:
+            raise ValueError("Cannot use both mask and probability for sampling.")
+
+        chosen_index: int | np.int64
+        if mask is not None:
+            valid_indices = np.nonzero(mask)[0]
+            chosen_index = self.np_random.choice(valid_indices)
+            return self.elements[chosen_index]
+        if probability is not None:
+            if np.sum(probability) != 1.0:
+                raise ValueError("Probability distribution must sum to 1.")
+            probability = probability / np.sum(probability)
+            chosen_index = self.np_random.choice(self.n, p=probability)
+            return self.elements[chosen_index]
+
+        chosen_index = self.np_random.integers(0, len(self.elements))
+        return self.elements[chosen_index]
+
+    def contains(self, x: T) -> bool:
+        return x in self.elements
