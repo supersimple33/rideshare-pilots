@@ -1,4 +1,4 @@
-from typing import Any, Generic, TypeAlias, TypeVar, TypedDict
+from typing import Any, Generic, TypeAlias, TypedDict
 
 import gymnasium as gym
 from gymnasium.spaces import Dict as DictSpace, MultiDiscrete
@@ -11,15 +11,13 @@ from game.utils import (
     FiniteSet,
     Location,
     NonNegInt,
-    PosInt,
+    H,
+    W,
     check_adj_empty,
 )
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
 MAX_PLACEMENT_ATTEMPTS = 1000
-
-H = TypeVar("H", bound=PosInt)
-W = TypeVar("W", bound=PosInt)
 
 
 class ObsType(TypedDict, Generic[H, W]):

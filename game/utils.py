@@ -12,6 +12,8 @@ Location: TypeAlias = np.ndarray[tuple[Literal[2]], np.dtype[np.int32]]
 PositionList: TypeAlias = list[Location]
 
 T = TypeVar("T")
+H = TypeVar("H", bound=PosInt)
+W = TypeVar("W", bound=PosInt)
 K = TypeVar("K", bound=PosInt)
 DT = TypeVar("DT", bound=np.generic)
 
@@ -30,6 +32,7 @@ class Content(np.uint8, Enum):
     FAKE_TARGET = auto()
     AGENT = auto()
     Border = auto()
+    OutOfSight = auto()
 
 
 def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool_:
@@ -90,6 +93,21 @@ def window_at(
     left = half - (j - j0)
     out[top : top + view.shape[0], left : left + view.shape[1]] = view
     return out
+
+
+def content_to_one_hot(
+    board: np.ndarray[tuple[H, W], np.dtype[np.uint8]],
+) -> np.ndarray[tuple[H, W, PosInt], np.dtype[np.uint8]]:
+    """Convert a board to a one-hot encoded representation.
+
+    Args:
+        board: The board to convert.
+        num_content_types: The number of different content types in the grid.
+
+    Returns:
+        A one-hot encoded representation of the board.
+    """
+    return np.eye(len(Content), dtype=np.uint8)[board]
 
 
 class RandomSet(Generic[T]):
