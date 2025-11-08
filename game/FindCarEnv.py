@@ -1,4 +1,4 @@
-from typing import Any, Generic, TypeAlias, TypedDict
+from typing import Any, Generic, Literal, TypeAlias, TypedDict
 
 import gymnasium as gym
 from gymnasium.spaces import Dict as DictSpace, MultiDiscrete
@@ -55,7 +55,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             height: The height of the grid.
             obstacle_scheme: The obstacle generation scheme to use when generating the grid. Defaults to no obstacles.
         """
-        self.metadata = {"render_modes": ["console"], "render_fps": 4}
+        self.metadata = {"render_modes": ["console"]}
         self.obstacle_scheme = obstacle_scheme
         self.width = width
         self.height = height
@@ -200,11 +200,43 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             print(row)
         print()
 
-    def render(self) -> None:
+    def _render_rgb_array(
+        self,
+    ) -> np.ndarray[tuple[H, W, Literal[3]], np.dtype[np.uint8]]:
+        """Render the current state of the environment to an RGB array.
+
+        Returns:
+            An RGB array representing the current state of the environment.
+        """
+        # Define colors for each content type (R, G, B)
+        color_map = {
+            Content.EMPTY: np.array([255, 255, 255], dtype=np.uint8),  # white
+            Content.OBSTACLE: np.array([30, 30, 30], dtype=np.uint8),  # black
+            Content.TARGET: np.array([0, 200, 0], dtype=np.uint8),  # green
+            Content.FAKE_TARGET: np.array([0, 100, 255], dtype=np.uint8),  # blue-ish
+            Content.AGENT: np.array([200, 0, 0], dtype=np.uint8),  # red
+        }
+
+        h, w = int(self.height), int(self.width)
+        img = np.zeros((h, w, 3), dtype=np.uint8)
+
+        # Map grid values to colors
+        for y in range(h):
+            for x in range(w):
+                val = int(self.grid[y, x])
+                img[y, x] = color_map.get(
+                    val, np.array([128, 128, 128], dtype=np.uint8)
+                )
+
+        return img
+
+    def render(self) -> None | np.ndarray[tuple[H, W, Literal[3]], np.dtype[np.uint8]]:
         """Render the environment."""
         match self.render_mode:
             case "human":
                 self._render_human()
+            case "rgb_array":
+                return self._render_rgb_array()
             case None:
                 pass
             case _:
