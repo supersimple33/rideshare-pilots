@@ -20,10 +20,10 @@ DT = TypeVar("DT", bound=np.generic)
 
 @unique
 class Direction(tuple[np.int32, np.int32], Enum):
-    DOWN = (np.int32(0), np.int32(1))
-    UP = (np.int32(0), np.int32(-1))
-    RIGHT = (np.int32(1), np.int32(0))
-    LEFT = (np.int32(-1), np.int32(0))
+    DOWN = (np.int32(1), np.int32(0))
+    UP = (np.int32(-1), np.int32(0))
+    RIGHT = (np.int32(0), np.int32(1))
+    LEFT = (np.int32(0), np.int32(-1))
 
 
 @unique

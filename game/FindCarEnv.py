@@ -170,17 +170,17 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self._agent_location += action
 
         # check if the new position is valid
-        x, y = self._agent_location
+        y, x = self._agent_location
         if not (0 <= x < self.width and 0 <= y < self.height):
             return self.view(), -1.0, True, False, {"reason": "out_of_bounds"}
 
-        if self.grid[x, y] == Content.OBSTACLE:
+        if self.grid[y, x] == Content.OBSTACLE:
             return self.view(), -1.0, True, False, {"reason": "hit_obstacle"}
-        if self.grid[x, y] == Content.TARGET:
+        if self.grid[y, x] == Content.TARGET:
             return self.view(), 1.0, True, False, {"reason": "found_target"}
-        if self.grid[x, y] == Content.FAKE_TARGET:
+        if self.grid[y, x] == Content.FAKE_TARGET:
             return self.view(), -0.5, True, False, {"reason": "found_fake_target"}
-        self.grid[x, y] = Content.AGENT
+        self.grid[y, x] = Content.AGENT
         return self.view(), 0.0, False, False, {}
 
     def _render_console(self) -> None:
