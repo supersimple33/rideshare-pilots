@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar, TypedDict
 
-from gymnasium.spaces import Dict as DictSpace, MultiDiscrete
+from gymnasium.spaces import Dict as DictSpace, MultiDiscrete, MultiBinary
 import numpy as np
 
 from game.FindCarEnv import ObsType, H, W
@@ -50,23 +50,14 @@ def local_view_wrapper(
 def one_hot_wrapper(obs_space: DictSpace):  # pyright: ignore[reportInvalidTypeVarUse]
     """Gets a wrapper that converts observations to one-hot encoding."""
 
-    def wrapper(observation: ObsType[H, W]) -> OneHotObsType[H, W]:
+    def wrapper(
+        observation: ObsType[H, W],
+    ) -> np.ndarray[tuple[H, W, PosInt], np.dtype[np.uint8]]:
         """A wrapper to convert observations to one-hot encoding."""
-        return {
-            "agent_position": observation["agent_position"],
-            "board": content_to_one_hot(observation["board"]),
-        }
+        return content_to_one_hot(observation["board"])
 
     board_space: MultiDiscrete = obs_space["board"]  # type: ignore
     width, height = board_space.shape
-    obs_space = DictSpace(
-        {
-            "agent_position": MultiDiscrete([width, height], dtype=np.int32),
-            "board": MultiDiscrete(
-                np.full((width, height, len(Content)), 2),
-                dtype=np.uint8,
-            ),
-        }
-    )
+    new_obs = MultiBinary((width, height, len(Content)))
 
-    return wrapper, obs_space
+    return wrapper, new_obs
