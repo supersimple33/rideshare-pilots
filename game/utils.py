@@ -26,7 +26,7 @@ class Direction(tuple[np.int32, np.int32], Enum):
 
 
 class Content(np.uint8, Enum):
-    EMPTY = auto()
+    EMPTY = 0
     OBSTACLE = auto()
     TARGET = auto()
     FAKE_TARGET = auto()
