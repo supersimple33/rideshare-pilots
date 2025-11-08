@@ -55,6 +55,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             height: The height of the grid.
             obstacle_scheme: The obstacle generation scheme to use when generating the grid. Defaults to no obstacles.
         """
+        self.metadata = {"render_modes": ["console"], "render_fps": 4}
         self.obstacle_scheme = obstacle_scheme
         self.width = width
         self.height = height

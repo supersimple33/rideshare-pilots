@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum, auto, unique
 from typing import Annotated, Generic, Literal, TypeAlias, TypeVar, Iterator, Optional
 
 from annotated_types import Gt, Ge
@@ -18,6 +18,7 @@ K = TypeVar("K", bound=PosInt)
 DT = TypeVar("DT", bound=np.generic)
 
 
+@unique
 class Direction(tuple[np.int32, np.int32], Enum):
     DOWN = (np.int32(0), np.int32(1))
     UP = (np.int32(0), np.int32(-1))
@@ -25,6 +26,7 @@ class Direction(tuple[np.int32, np.int32], Enum):
     LEFT = (np.int32(-1), np.int32(0))
 
 
+@unique
 class Content(np.uint8, Enum):
     EMPTY = 0
     OBSTACLE = auto()
