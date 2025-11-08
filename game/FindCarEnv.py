@@ -22,7 +22,7 @@ MAX_PLACEMENT_ATTEMPTS = 1000
 
 class ObsType(TypedDict, Generic[H, W]):
     agent_position: Location
-    board: np.ndarray[tuple[W, H], np.dtype[np.uint8]]
+    board: np.ndarray[tuple[H, W], np.dtype[np.uint8]]
 
 
 ActionType: TypeAlias = Direction
@@ -36,7 +36,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
     width: W
     height: H
     obstacle_scheme: ObstacleGenerationScheme
-    grid: np.ndarray[tuple[W, H], np.dtype[np.uint8]]
+    grid: np.ndarray[tuple[H, W], np.dtype[np.uint8]]
     _target_location: Location
     _agent_location: Location
 
@@ -66,9 +66,9 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
 
         self.observation_space = DictSpace(
             {
-                "agent_position": MultiDiscrete([width, height], dtype=np.int32),
+                "agent_position": MultiDiscrete([height, width], dtype=np.int32),
                 "board": MultiDiscrete(
-                    np.full((width, height), len(Content)),
+                    np.full((height, width), len(Content)),
                     dtype=np.uint8,
                 ),
             }
@@ -112,14 +112,14 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
 
         # generate a random position for the agent
         self._agent_location = self.np_random.integers(
-            low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
+            low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
         )
         self.grid[tuple(self._agent_location)] = Content.AGENT
         # generate a random position for the target and ensure it is not adjacent to anything else
         i = 0
         while True:
             self._target_location = self.np_random.integers(
-                low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
+                low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
             )
             x, y = self._target_location
             if i >= MAX_PLACEMENT_ATTEMPTS:
@@ -134,7 +134,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         for _ in range(self.num_fake_targets):
             while True:
                 fake_target_location = self.np_random.integers(
-                    low=0, high=[self.width, self.height], size=(2,), dtype=np.int32
+                    low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
                 )
                 x, y = fake_target_location
                 if i >= MAX_PLACEMENT_ATTEMPTS:

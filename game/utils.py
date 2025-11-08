@@ -75,7 +75,7 @@ def window_at(
     j0 = max(j - half, 0)
     j1 = min(j + half + 1, m)
 
-    # Extract visible subarray
+    # Extract visible sub-array
     view = a[i0:i1, j0:j1]
 
     # Fast path: fully inside boundaries

@@ -11,7 +11,7 @@ N = TypeVar("N", bound=PosInt)
 
 class OneHotObsType(TypedDict, Generic[H, W]):
     agent_position: Location
-    board: np.ndarray[tuple[W, H, PosInt], np.dtype[np.uint8]]
+    board: np.ndarray[tuple[H, W, PosInt], np.dtype[np.uint8]]
 
 
 def local_view_wrapper(
