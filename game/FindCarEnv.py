@@ -183,7 +183,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self.grid[y, x] = Content.AGENT
         return self.view(), 0.0, False, False, {}
 
-    def _render_console(self) -> None:
+    def _render_human(self) -> None:
         """Render the current state of the environment to the console."""
         content_symbols = {
             Content.EMPTY: ".",
@@ -203,8 +203,8 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
     def render(self) -> None:
         """Render the environment."""
         match self.render_mode:
-            case "console":
-                self._render_console()
+            case "human":
+                self._render_human()
             case None:
                 pass
             case _:
