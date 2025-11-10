@@ -219,12 +219,14 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             Content.AGENT.value: np.array([200, 0, 0], dtype=np.uint8),  # red
         }
 
-        h, w = int(self.height), int(self.width)
-        img = np.zeros((h, w, 3), dtype=np.uint8)
+        img: np.ndarray[tuple[H, W, Literal[3]], np.dtype[np.uint8]]
+        img = np.zeros(
+            (self.height, self.width, 3), dtype=np.uint8
+        )  # pyright: ignore[reportAssignmentType]
 
         # Map grid values to colors
-        for y in range(h):
-            for x in range(w):
+        for y in range(self.height):
+            for x in range(self.width):
                 val = int(self.grid[y, x])
                 img[y, x] = color_map.get(
                     val, np.array([128, 128, 128], dtype=np.uint8)
