@@ -210,11 +210,13 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         """
         # Define colors for each content type (R, G, B)
         color_map = {
-            Content.EMPTY: np.array([255, 255, 255], dtype=np.uint8),  # white
-            Content.OBSTACLE: np.array([30, 30, 30], dtype=np.uint8),  # black
-            Content.TARGET: np.array([0, 200, 0], dtype=np.uint8),  # green
-            Content.FAKE_TARGET: np.array([0, 100, 255], dtype=np.uint8),  # blue-ish
-            Content.AGENT: np.array([200, 0, 0], dtype=np.uint8),  # red
+            Content.EMPTY.value: np.array([255, 255, 255], dtype=np.uint8),  # white
+            Content.OBSTACLE.value: np.array([30, 30, 30], dtype=np.uint8),  # gray
+            Content.TARGET.value: np.array([0, 200, 0], dtype=np.uint8),  # green
+            Content.FAKE_TARGET.value: np.array(
+                [0, 100, 255], dtype=np.uint8
+            ),  # blue-ish
+            Content.AGENT.value: np.array([200, 0, 0], dtype=np.uint8),  # red
         }
 
         h, w = int(self.height), int(self.width)
