@@ -3,6 +3,8 @@ from typing import Any, Generic, Literal, TypeAlias, TypedDict
 import gymnasium as gym
 from gymnasium.spaces import Dict as DictSpace, MultiDiscrete
 import numpy as np
+from w9_pathfinding.envs import Grid
+from w9_pathfinding.pf import BiAStar
 
 from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
 from game.utils import (
@@ -153,6 +155,20 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             self.np_random,
         )
 
+        while not self._check_solvability():
+            self.grid.fill(Content.EMPTY)
+
+            self.grid[tuple(self._agent_location)] = Content.AGENT
+            self.grid[tuple(self._target_location)] = Content.TARGET
+            for poi in points_of_interest[2:]:
+                self.grid[tuple(poi)] = Content.FAKE_TARGET
+
+            self.obstacle_scheme.generate_obstacles(
+                self.grid,
+                points_of_interest,
+                self.np_random,
+            )
+
         return self.view(), {}
 
     def step(
@@ -182,6 +198,23 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             return self.view(), -0.5, True, False, {"reason": "found_fake_target"}
         self.grid[y, x] = Content.AGENT
         return self.view(), 0.0, False, False, {}
+
+    def _check_solvability(self) -> bool:
+        """Check if there is a valid path from the agent to the target using A*.
+
+        Returns:
+            True if a path exists, False otherwise.
+        """
+        transformed_grid = np.where(
+            (self.grid == Content.EMPTY)
+            | (self.grid == Content.TARGET)
+            | (self.grid == Content.AGENT),
+            1,
+            -1,
+        )
+        grid_env = Grid(transformed_grid)  # type: ignore
+        path = BiAStar(grid_env).find_path(self._agent_location, self._target_location)  # type: ignore
+        return not path
 
     def _render_human(self) -> None:
         """Render the current state of the environment to the console."""
