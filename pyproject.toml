@@ -10,6 +10,7 @@ dependencies = [
     "gymnasium[other]>=1.2.2",
     "numpy>=2.3.4",
     "pygame>=2.6.1",
+    "w9-pathfinding>=0.1.2",
 ]
 
 [tool.pyright]
