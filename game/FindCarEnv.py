@@ -3,8 +3,8 @@ from typing import Any, Generic, Literal, TypeAlias, TypedDict
 import gymnasium as gym
 from gymnasium.spaces import Dict as DictSpace, MultiDiscrete
 import numpy as np
-from w9_pathfinding.envs import Grid
-from w9_pathfinding.pf import BiAStar
+from w9_pathfinding.envs import Grid  # type: ignore
+from w9_pathfinding.pf import BiAStar  # type: ignore
 
 from game.GridGeneration import NoObstaclesScheme, ObstacleGenerationScheme
 from game.utils import (
@@ -49,6 +49,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         num_fake_targets: NonNegInt = 0,
         obstacle_scheme: ObstacleGenerationScheme = NOOP_GENERATION_SCHEME,
         render_mode: str | None = None,
+        check_solvability: bool = True,
     ):
         """Initialize the FindCar environment.
 
@@ -63,6 +64,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self.height = height
         self.render_mode = render_mode
         self.num_fake_targets = num_fake_targets
+        self.check_solvability = check_solvability
 
         self._agent_location = np.array([-1, -1], dtype=np.int32)
         self._target_location = np.array([-1, -1], dtype=np.int32)
@@ -112,7 +114,27 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         super().reset(seed=seed, options=options)
 
         self.grid.fill(Content.EMPTY)
+        points_of_interest = self._generate_agent_locations()
 
+        self.obstacle_scheme.generate_obstacles(
+            self.grid,
+            points_of_interest,
+            self.np_random,
+        )
+
+        while not self._check_solvability() and self.check_solvability:
+            self.grid.fill(Content.EMPTY)
+            points_of_interest = self._generate_agent_locations()
+
+            self.obstacle_scheme.generate_obstacles(
+                self.grid,
+                points_of_interest,
+                self.np_random,
+            )
+
+        return self.view(), {}
+
+    def _generate_agent_locations(self) -> list[Location]:
         # generate a random position for the agent
         self._agent_location = self.np_random.integers(
             low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
@@ -148,28 +170,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                 break
             self.grid[tuple(fake_target_location)] = Content.FAKE_TARGET
             points_of_interest.append(fake_target_location)
-
-        self.obstacle_scheme.generate_obstacles(
-            self.grid,
-            points_of_interest,
-            self.np_random,
-        )
-
-        while not self._check_solvability():
-            self.grid.fill(Content.EMPTY)
-
-            self.grid[tuple(self._agent_location)] = Content.AGENT
-            self.grid[tuple(self._target_location)] = Content.TARGET
-            for poi in points_of_interest[2:]:
-                self.grid[tuple(poi)] = Content.FAKE_TARGET
-
-            self.obstacle_scheme.generate_obstacles(
-                self.grid,
-                points_of_interest,
-                self.np_random,
-            )
-
-        return self.view(), {}
+        return points_of_interest
 
     def step(
         self, action: ActionType
@@ -213,7 +214,9 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             -1,
         )
         grid_env = Grid(transformed_grid)  # type: ignore
-        path = BiAStar(grid_env).find_path(self._agent_location, self._target_location)  # type: ignore
+        y1, x1 = self._agent_location
+        y2, x2 = self._target_location
+        path = BiAStar(grid_env).find_path((x1, y1), (x2, y2))  # type: ignore
         return not path
 
     def _render_human(self) -> None:
