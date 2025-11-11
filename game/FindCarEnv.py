@@ -47,7 +47,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         width: W,
         height: H,
         num_fake_targets: NonNegInt = 0,
-        obstacle_scheme: ObstacleGenerationScheme = NOOP_GENERATION_SCHEME,
+        obstacle_scheme: ObstacleGenerationScheme | None = None,
         render_mode: str | None = None,
         check_solvability: bool = True,
     ):
@@ -59,7 +59,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             obstacle_scheme: The obstacle generation scheme to use when generating the grid. Defaults to no obstacles.
         """
         self.metadata = {"render_modes": ["console"]}
-        self.obstacle_scheme = obstacle_scheme
+        self.obstacle_scheme = obstacle_scheme or NOOP_GENERATION_SCHEME
         self.width = width
         self.height = height
         self.render_mode = render_mode
