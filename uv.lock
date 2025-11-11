@@ -224,6 +224,15 @@ wheels = [
 ]
 
 [[package]]
+name = "gtpyhop"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ce/d1/b64401be094ad5751650fcb0f0f44bc28e1c435b02be295df7732439bef8/gtpyhop-1.4.0.tar.gz", hash = "sha256:12d716d47efb831e8e4313d1256e75159eb9cd1ada214665cc86ebdeb19d4223", size = 125843, upload-time = "2025-09-10T12:58:01.822Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/30/d6/8d717db5c546c5906b94b75cf5bb2007f10460fb66e148c1cf8c055fc1b5/gtpyhop-1.4.0-py3-none-any.whl", hash = "sha256:4ab64938042e9a2daf39123047c87a0577d92a1f9d05ada734bcd74473660c75", size = 146765, upload-time = "2025-09-10T12:58:00.731Z" },
+]
+
+[[package]]
 name = "gymnasium"
 version = "1.2.2"
 source = { registry = "https://pypi.org/simple" }
@@ -782,6 +791,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "annotated-types" },
+    { name = "gtpyhop" },
     { name = "gymnasium", extra = ["other"] },
     { name = "numpy" },
     { name = "pygame" },
@@ -796,6 +806,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "annotated-types", specifier = ">=0.7.0" },
+    { name = "gtpyhop", specifier = ">=1.4.0" },
     { name = "gymnasium", extras = ["other"], specifier = ">=1.2.2" },
     { name = "numpy", specifier = ">=2.3.4" },
     { name = "pygame", specifier = ">=2.6.1" },
