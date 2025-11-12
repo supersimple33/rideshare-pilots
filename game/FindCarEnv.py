@@ -26,6 +26,10 @@ class ObsType(TypedDict, Generic[H, W]):
     agent_position: Location
     board: np.ndarray[tuple[H, W], np.dtype[np.uint8]]
 
+    def __annotate__(self) -> dict:  # TODO: fix these annotation errors with generics
+        """A TypedDict representing the observation type of the FindCarEnv."""
+        return {}
+
 
 ActionType: TypeAlias = Direction
 

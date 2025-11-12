@@ -13,6 +13,10 @@ class OneHotObsType(TypedDict, Generic[H, W]):
     agent_position: Location
     board: np.ndarray[tuple[H, W, PosInt], np.dtype[np.uint8]]
 
+    def __annotate__(self) -> dict:
+        """Annotate the shape of the board for static type checkers."""
+        return {}
+
 
 def local_view_wrapper(
     obs_space: DictSpace, n: N  # pyright: ignore[reportInvalidTypeVarUse]
