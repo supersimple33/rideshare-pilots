@@ -196,7 +196,7 @@ class FiniteSet(Space[T], Generic[T]):
 
     def sample(
         self,
-        mask: np.ndarray[tuple[int], np.dtype[np.int8]] | None = None,
+        mask: np.ndarray[tuple[int], np.dtype[np.uint8]] | None = None,
         probability: np.ndarray[tuple[int], np.dtype[np.float64]] | None = None,
     ) -> T:
         if mask is not None and probability is not None:

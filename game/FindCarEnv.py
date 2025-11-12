@@ -58,7 +58,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             height: The height of the grid.
             obstacle_scheme: The obstacle generation scheme to use when generating the grid. Defaults to no obstacles.
         """
-        self.metadata = {"render_modes": ["console"]}
+        self.metadata = {"render_modes": ["human", "rgb_array"]}
         self.obstacle_scheme = obstacle_scheme or NOOP_GENERATION_SCHEME
         self.width = width
         self.height = height
@@ -83,8 +83,8 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         )
 
         self.grid = np.empty(
-            (height, width), dtype=np.int8
-        )  # pyright: ignore[reportAttributeAccessIssue]
+            (height, width), dtype=np.uint8
+        )  # TODO: Fix the complaints here
 
     def view(self) -> ObsType[H, W]:
         """Get the current observation of the environment.
