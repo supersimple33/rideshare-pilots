@@ -146,10 +146,10 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             self._target_location = self.np_random.integers(
                 low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
             )
-            x, y = self._target_location
+            y, x = self._target_location
             if i >= MAX_PLACEMENT_ATTEMPTS:
                 raise RuntimeError("Failed to place target after maximum attempts")
-            if not check_adj_empty(self.grid, x, y):
+            if not check_adj_empty(self.grid, y, x):
                 i += 1
                 continue
             break
@@ -161,10 +161,10 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                 fake_target_location = self.np_random.integers(
                     low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
                 )
-                x, y = fake_target_location
+                y, x = fake_target_location
                 if i >= MAX_PLACEMENT_ATTEMPTS:
                     raise RuntimeError("Failed to place target after maximum attempts")
-                if not check_adj_empty(self.grid, x, y):
+                if not check_adj_empty(self.grid, y, x):
                     i += 1
                     continue
                 break

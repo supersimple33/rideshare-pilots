@@ -37,7 +37,7 @@ class Content(np.uint8, Enum):
     OutOfSight = auto()
 
 
-def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool_:
+def check_adj_empty(grid: GridType, y: np.integer, x: np.integer) -> np.bool_:
     """Check that the cell at (x, y) and its adjacent cells are empty.
 
     Args:
@@ -49,8 +49,8 @@ def check_adj_empty(grid: GridType, x: np.integer, y: np.integer) -> np.bool_:
     """
     return np.all(
         grid[
-            max(0, x - 1) : min(grid.shape[0], x + 2),
             max(0, y - 1) : min(grid.shape[1], y + 2),
+            max(0, x - 1) : min(grid.shape[0], x + 2),
         ]
         == Content.EMPTY
     )
