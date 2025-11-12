@@ -49,8 +49,8 @@ def check_all_adj_empty(grid: GridType, y: np.integer, x: np.integer) -> np.bool
     """
     return np.all(
         grid[
-            max(0, y - 1) : min(grid.shape[1], y + 2),
-            max(0, x - 1) : min(grid.shape[0], x + 2),
+            max(0, y - 1) : min(grid.shape[0], y + 2),
+            max(0, x - 1) : min(grid.shape[1], x + 2),
         ]
         == Content.EMPTY
     )
