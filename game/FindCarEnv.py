@@ -1,4 +1,4 @@
-from typing import Any, Generic, Literal, TypeAlias, TypedDict
+from typing import Any, Generic, Literal, TypeAlias, TypedDict, cast
 
 import gymnasium as gym
 from gymnasium.spaces import Dict as DictSpace, MultiDiscrete
@@ -118,7 +118,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         super().reset(seed=seed, options=options)
 
         self.grid.fill(Content.EMPTY)
-        points_of_interest = self._generate_agent_locations()
+        points_of_interest = self._generate_agent_and_targets()
 
         self.obstacle_scheme.generate_obstacles(
             self.grid,
@@ -128,7 +128,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
 
         while not self._check_solvability() and self.check_solvability:
             self.grid.fill(Content.EMPTY)
-            points_of_interest = self._generate_agent_locations()
+            points_of_interest = self._generate_agent_and_targets()
 
             self.obstacle_scheme.generate_obstacles(
                 self.grid,
@@ -138,7 +138,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
 
         return self.view(), {}
 
-    def _generate_agent_locations(self) -> list[Location]:
+    def _generate_agent_and_targets(self) -> list[Location]:
         # generate a random position for the agent
         self._agent_location = self.np_random.integers(
             low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
@@ -217,11 +217,16 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             1,
             -1,
         )
-        grid_env = Grid(transformed_grid)  # type: ignore
+        grid_env = Grid(transformed_grid)  # pyright: ignore[reportUnknownVariableType]
         y1, x1 = self._agent_location
         y2, x2 = self._target_location
-        path = BiAStar(grid_env).find_path((x1, y1), (x2, y2))  # type: ignore
-        return not path
+        path = cast(
+            list[tuple[int, int]] | None,
+            BiAStar(grid_env).find_path(  # pyright: ignore[reportUnknownMemberType]
+                (x1, y1), (x2, y2)
+            ),
+        )
+        return bool(path)
 
     def _render_human(self) -> None:
         """Render the current state of the environment to the console."""
