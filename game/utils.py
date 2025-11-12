@@ -37,7 +37,7 @@ class Content(np.uint8, Enum):
     OutOfSight = auto()
 
 
-def check_adj_empty(grid: GridType, y: np.integer, x: np.integer) -> np.bool_:
+def check_all_adj_empty(grid: GridType, y: np.integer, x: np.integer) -> np.bool_:
     """Check that the cell at (x, y) and its adjacent cells are empty.
 
     Args:

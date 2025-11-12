@@ -8,7 +8,7 @@ from game.utils import (
     GridType,
     PositionList,
     RandomSet,
-    check_adj_empty,
+    check_all_adj_empty,
 )
 
 
@@ -76,7 +76,7 @@ class DisjointBlobs(ObstacleGenerationScheme):
             attempts += 1
             start_idx = generator.integers(0, num_cells)
             y, x = np.divmod(start_idx, grid.shape[1])
-            if not check_adj_empty(grid, y, x):
+            if not check_all_adj_empty(grid, y, x):
                 continue
 
             # setup tracking for the new blob
@@ -98,7 +98,7 @@ class DisjointBlobs(ObstacleGenerationScheme):
                 blob_checked.add((cy, cx))
 
                 # ensure the new cell is valid
-                if not check_adj_empty(grid, cy, cx):
+                if not check_all_adj_empty(grid, cy, cx):
                     continue
 
                 # add the new cell to the blob

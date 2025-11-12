@@ -15,7 +15,7 @@ from game.utils import (
     NonNegInt,
     H,
     W,
-    check_adj_empty,
+    check_all_adj_empty,
 )
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
@@ -153,7 +153,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             y, x = self._target_location
             if i >= MAX_PLACEMENT_ATTEMPTS:
                 raise RuntimeError("Failed to place target after maximum attempts")
-            if not check_adj_empty(self.grid, y, x):
+            if not check_all_adj_empty(self.grid, y, x):
                 i += 1
                 continue
             break
@@ -168,7 +168,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                 y, x = fake_target_location
                 if i >= MAX_PLACEMENT_ATTEMPTS:
                     raise RuntimeError("Failed to place target after maximum attempts")
-                if not check_adj_empty(self.grid, y, x):
+                if not check_all_adj_empty(self.grid, y, x):
                     i += 1
                     continue
                 break
