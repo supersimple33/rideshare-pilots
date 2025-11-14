@@ -20,6 +20,7 @@ from game.utils import (
 
 NOOP_GENERATION_SCHEME = NoObstaclesScheme()
 MAX_PLACEMENT_ATTEMPTS = 1000
+IMAGE_SCALE = 30
 
 
 class ObsType(TypedDict, Generic[H, W]):
@@ -62,7 +63,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             height: The height of the grid.
             obstacle_scheme: The obstacle generation scheme to use when generating the grid. Defaults to no obstacles.
         """
-        self.metadata = {"render_modes": ["human", "rgb_array"]}
+        self.metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 15}
         self.obstacle_scheme = obstacle_scheme or NOOP_GENERATION_SCHEME
         self.width = width
         self.height = height
@@ -247,7 +248,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
 
     def _render_rgb_array(
         self,
-    ) -> np.ndarray[tuple[H, W, Literal[3]], np.dtype[np.uint8]]:
+    ) -> np.ndarray[tuple[int, int, Literal[3]], np.dtype[np.uint8]]:
         """Render the current state of the environment to an RGB array.
 
         Returns:
@@ -277,9 +278,11 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                     val, np.array([128, 128, 128], dtype=np.uint8)
                 )
 
-        return img
+        return np.kron(img, np.ones((IMAGE_SCALE, IMAGE_SCALE, 1), dtype=np.uint8))
 
-    def render(self) -> None | np.ndarray[tuple[H, W, Literal[3]], np.dtype[np.uint8]]:
+    def render(
+        self,
+    ) -> None | np.ndarray[tuple[int, int, Literal[3]], np.dtype[np.uint8]]:
         """Render the environment."""
         match self.render_mode:
             case "human":
