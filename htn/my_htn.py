@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generator, SupportsInt
 
-from gymnasium.wrappers import TransformObservation
+from gymnasium.wrappers import TransformObservation, RecordVideo
 import numpy as np
 
 from game.FindCarEnv import FindCarEnv, ObsType
@@ -15,6 +15,7 @@ class HTNFindCar(ABC):
     DEFAULT_N = 3
     DEFAULT_NUM_FAKE_TARGETS = 0
     DEFAULT_OBSTACLE_SCHEME = None
+    DEFAULT_RECORDING_NAME = None
 
     def __init__(
         self,
@@ -23,17 +24,25 @@ class HTNFindCar(ABC):
         n: PosInt = DEFAULT_N,
         num_fake_targets: NonNegInt = DEFAULT_NUM_FAKE_TARGETS,
         obstacle_scheme: ObstacleGenerationScheme | None = DEFAULT_OBSTACLE_SCHEME,
+        recording_name: None | str = DEFAULT_RECORDING_NAME,
     ) -> None:
         env = FindCarEnv(
             width=w,
             height=h,
             num_fake_targets=num_fake_targets,
-            render_mode="human",
+            render_mode="rgb_array" if recording_name is not None else "human",
             obstacle_scheme=obstacle_scheme,
             check_solvability=True,
         )
         wrapper, obs_space = local_view_wrapper(env.observation_space, n)  # type: ignore
         self._env = TransformObservation(env, wrapper, obs_space)
+        if recording_name is not None:
+            self._env = RecordVideo(
+                self._env,
+                video_folder="recordings",
+                name_prefix=recording_name,
+                episode_trigger=lambda _: True,
+            )
 
     @abstractmethod
     def _get_action(
@@ -70,6 +79,7 @@ class DictBasedHTN(HTNFindCar, ABC):
         obstacle_scheme: (
             ObstacleGenerationScheme | None
         ) = HTNFindCar.DEFAULT_OBSTACLE_SCHEME,
+        recording_name: None | str = HTNFindCar.DEFAULT_RECORDING_NAME,
     ) -> None:
         super().__init__(
             h=h,
@@ -77,6 +87,7 @@ class DictBasedHTN(HTNFindCar, ABC):
             n=n,
             num_fake_targets=num_fake_targets,
             obstacle_scheme=obstacle_scheme,
+            recording_name=recording_name,
         )
         self._target_location: None | Location = None
         self._search_path: list[Direction] = []
