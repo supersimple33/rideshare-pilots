@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generator, SupportsInt
+from typing import SupportsInt
 
 from gymnasium.wrappers import TransformObservation, RecordVideo
 import numpy as np
@@ -186,16 +186,24 @@ class DictBasedHTN(HTNFindCar, ABC):
         self._visited.add((start[0], start[1]))
         if not self._search_path:
             # start a new search to the next unexplored point
-            unexplored_points: Generator[Location] = (
+            unexplored_points = [
                 np.array([y, x], dtype=np.int32)
                 for (y, x), value in self._known_spaces.items()
                 if value == Content.EMPTY and (y, x) not in self._visited
-            )
-            next_target = next(unexplored_points, None)
-            if next_target is None:
+            ]
+            if not unexplored_points:
                 raise RuntimeError("No unexplored points left to search.")
+
+            # choose the closest one to the agent (Manhattan distance)
+            next_target = min(
+                unexplored_points,
+                key=lambda p: abs(int(p[0]) - int(start[0]))
+                + abs(int(p[1]) - int(start[1])),
+            )
+
             self._search_path = self._generate_search_path(
                 start=start,
                 target=next_target,
             )
+
         return self._search_path.pop(0)
