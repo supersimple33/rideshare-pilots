@@ -109,7 +109,9 @@ def reachable_window_at(
     Unreachable cells are those that are obstacles in the grid.
     The return array is annotated to have the same dtype as the input array.
     """
-    standard_window = window_at(a, loc, k, pad_value)
+
+    # Needs a copy to modifications do not affect original array
+    standard_window = window_at(a, loc, k, pad_value).copy()
 
     cx = k // 2
     cy = k // 2
