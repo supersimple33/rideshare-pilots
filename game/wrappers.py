@@ -4,7 +4,13 @@ from gymnasium.spaces import Dict as DictSpace, MultiDiscrete, MultiBinary
 import numpy as np
 
 from game.FindCarEnv import ObsType, H, W
-from game.utils import Content, Location, PosInt, content_to_one_hot, window_at
+from game.utils import (
+    Content,
+    Location,
+    PosInt,
+    content_to_one_hot,
+    reachable_window_at,
+)
 
 N = TypeVar("N", bound=PosInt)
 
@@ -13,9 +19,9 @@ class OneHotObsType(TypedDict, Generic[H, W]):
     agent_position: Location
     board: np.ndarray[tuple[H, W, PosInt], np.dtype[np.uint8]]
 
-    def __annotate__(self) -> dict:
+    def __annotate__(self) -> dict:  # type: ignore
         """Annotate the shape of the board for static type checkers."""
-        return {}
+        return {}  # type: ignore
 
 
 def local_view_wrapper(
@@ -28,7 +34,7 @@ def local_view_wrapper(
 
         return {
             "agent_position": observation["agent_position"],
-            "board": window_at(
+            "board": reachable_window_at(
                 observation["board"],
                 observation["agent_position"],
                 n,

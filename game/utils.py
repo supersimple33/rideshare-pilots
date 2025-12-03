@@ -1,5 +1,6 @@
 from enum import Enum, auto, unique
 from typing import Annotated, Generic, Literal, TypeAlias, TypeVar, Iterator, Optional
+from collections import deque
 
 from annotated_types import Gt, Ge
 import numpy as np
@@ -95,6 +96,59 @@ def window_at(
     left = half - (j - j0)
     out[top : top + view.shape[0], left : left + view.shape[1]] = view
     return out
+
+
+def reachable_window_at(
+    a: np.ndarray[tuple[PosInt, PosInt], np.dtype[DT]],
+    loc: Location,
+    k: K,
+    pad_value: DT,
+) -> np.ndarray[tuple[K, K], np.dtype[DT]]:
+    """Return a k×k window centered at (i, j) with padding for unreachable cells.
+
+    Unreachable cells are those that are obstacles in the grid.
+    The return array is annotated to have the same dtype as the input array.
+    """
+    standard_window = window_at(a, loc, k, pad_value)
+
+    cx = k // 2
+    cy = k // 2
+
+    def is_walkable(cell: DT) -> bool:
+        return cell not in [Content.OBSTACLE, Content.Border]
+
+    reachable = np.zeros((k, k), dtype=bool)
+
+    q: deque[tuple[np.integer | int, np.integer | int]] = deque()
+    q.append((cy, cx))
+    reachable[cy, cx] = True
+
+    while q:
+        y, x = q.popleft()
+        for dy, dx in Direction:
+            ny, nx = y + dy, x + dx
+            if (
+                0 <= ny < k
+                and 0 <= nx < k
+                and not reachable[ny, nx]
+                and is_walkable(standard_window[ny, nx])  # type: ignore
+            ):
+                reachable[ny, nx] = True
+                q.append((ny, nx))
+
+    visible = reachable.copy()
+    for y in range(k):
+        for x in range(k):
+            if reachable[y, x]:
+                for dy, dx in Direction:
+                    ny, nx = y + dy, x + dx
+                    if 0 <= ny < k and 0 <= nx < k:
+                        visible[ny, nx] = True
+    for y in range(k):
+        for x in range(k):
+            if not visible[y, x] and standard_window[y, x] != pad_value:
+                standard_window[y, x] = Content.OutOfSight  # type: ignore
+    return standard_window
 
 
 def content_to_one_hot(
