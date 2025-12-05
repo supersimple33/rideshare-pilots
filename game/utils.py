@@ -34,10 +34,20 @@ class Content(np.uint8, Enum):
     OBSTACLE = auto()
     TARGET = auto()
     FAKE_TARGET = auto()
+    Helper = auto()
     UNKNOWN_TARGET = auto()
     AGENT = auto()
     Border = auto()
     OutOfSight = auto()
+
+
+UNPASSABLE_CONTENT = {
+    Content.OBSTACLE,
+    Content.Border,
+    Content.OutOfSight,
+    Content.Helper,
+    Content.FAKE_TARGET,
+}
 
 
 def check_all_adj_empty(grid: GridType, y: np.integer, x: np.integer) -> np.bool_:

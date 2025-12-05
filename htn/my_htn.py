@@ -6,7 +6,14 @@ import numpy as np
 
 from game.FindCarEnv import FindCarEnv, ObsType
 from game.GridGeneration import ObstacleGenerationScheme
-from game.utils import Content, Direction, Location, NonNegInt, PosInt
+from game.utils import (
+    Content,
+    Direction,
+    Location,
+    NonNegInt,
+    PosInt,
+    UNPASSABLE_CONTENT,
+)
 from game.wrappers import car_hider_wrapper, local_view_wrapper
 from collections import deque
 
@@ -123,13 +130,7 @@ class DictBasedHTN(HTNFindCar, ABC):
                 (start + Direction.LEFT, [Direction.LEFT]),
                 (start + Direction.RIGHT, [Direction.RIGHT]),
             ]
-            if self._known_spaces.get((x[0], x[1]))
-            not in [
-                Content.OBSTACLE,
-                Content.Border,
-                Content.OutOfSight,
-                Content.FAKE_TARGET,
-            ]
+            if self._known_spaces.get((x[0], x[1])) not in UNPASSABLE_CONTENT
         )
         visited: set[tuple[SupportsInt, SupportsInt]] = {(start[0], start[1])}
         while q:
@@ -144,12 +145,7 @@ class DictBasedHTN(HTNFindCar, ABC):
                 if cell is None:
                     # unknown / out of observed area -> treat as blocked
                     continue
-                if cell in [
-                    Content.OBSTACLE,
-                    Content.Border,
-                    Content.OutOfSight,
-                    Content.FAKE_TARGET,
-                ]:
+                if cell in UNPASSABLE_CONTENT:
                     # blocked cell
                     continue
                 visited.add((nxt[0], nxt[1]))

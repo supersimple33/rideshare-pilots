@@ -52,6 +52,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         width: W,
         height: H,
         num_fake_targets: NonNegInt = 0,
+        num_helpers: NonNegInt = 0,
         obstacle_scheme: ObstacleGenerationScheme | None = None,
         render_mode: str | None = None,
         check_solvability: bool = True,
@@ -69,6 +70,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self.height = height
         self.render_mode = render_mode
         self.num_fake_targets = num_fake_targets
+        self.num_helpers = num_helpers
         self.check_solvability = check_solvability
 
         self._agent_location = np.array([-1, -1], dtype=np.int32)
@@ -147,34 +149,39 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         self.grid[tuple(self._agent_location)] = Content.AGENT
         # generate a random position for the target and ensure it is not adjacent to anything else
         i = 0
-        while True:
-            self._target_location = self.np_random.integers(
-                low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
-            )
-            y, x = self._target_location
-            if i >= MAX_PLACEMENT_ATTEMPTS:
-                raise RuntimeError("Failed to place target after maximum attempts")
-            if not check_all_adj_empty(self.grid, y, x):
-                i += 1
-                continue
-            break
-        self.grid[tuple(self._target_location)] = Content.TARGET
-        # generate fake target locations
-        points_of_interest = [self._agent_location, self._target_location]
-        for _ in range(self.num_fake_targets):
+
+        # Helper function to slot entities on the grid
+        def slotEntity() -> Location:
+            nonlocal i
             while True:
-                fake_target_location = self.np_random.integers(
+                location = self.np_random.integers(
                     low=0, high=[self.height, self.width], size=(2,), dtype=np.int32
                 )
-                y, x = fake_target_location
+                y, x = location
                 if i >= MAX_PLACEMENT_ATTEMPTS:
                     raise RuntimeError("Failed to place target after maximum attempts")
                 if not check_all_adj_empty(self.grid, y, x):
                     i += 1
                     continue
-                break
+                return location
+
+        self._target_location = slotEntity()
+        self.grid[tuple(self._target_location)] = Content.TARGET
+        # generate fake target locations
+        points_of_interest = [self._agent_location, self._target_location]
+
+        for _ in range(self.num_fake_targets):
+            fake_target_location = slotEntity()
+
             self.grid[tuple(fake_target_location)] = Content.FAKE_TARGET
             points_of_interest.append(fake_target_location)
+
+        for _ in range(self.num_helpers):
+            helper_location = slotEntity()
+
+            self.grid[tuple(helper_location)] = Content.Helper
+            points_of_interest.append(helper_location)
+
         return points_of_interest
 
     def step(
@@ -194,14 +201,16 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
         # check if the new position is valid
         y, x = self._agent_location
         if not (0 <= x < self.width and 0 <= y < self.height):
-            return self.view(), -1.0, True, False, {"reason": "out_of_bounds"}
+            return self.view(), -1.0, True, False, {"reason": "out of bounds"}
 
         if self.grid[y, x] == Content.OBSTACLE:
-            return self.view(), -1.0, True, False, {"reason": "hit_obstacle"}
+            return self.view(), -1.0, True, False, {"reason": "hit obstacle"}
         if self.grid[y, x] == Content.TARGET:
-            return self.view(), 1.0, True, False, {"reason": "found_target"}
+            return self.view(), 1.0, True, False, {"reason": "found target"}
         if self.grid[y, x] == Content.FAKE_TARGET:
-            return self.view(), -0.5, True, False, {"reason": "found_fake_target"}
+            return self.view(), -0.5, True, False, {"reason": "found fake target"}
+        if self.grid[y, x] == Content.Helper:
+            return self.view(), -0.5, False, False, {"reason": "hit helper"}
         self.grid[y, x] = Content.AGENT
         return self.view(), 0.0, False, False, {}
 
@@ -237,6 +246,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
             Content.TARGET: "T",
             Content.FAKE_TARGET: "F",
             Content.AGENT: "A",
+            Content.Helper: "H",
         }
         for y in range(self.height):
             row = "".join(
@@ -263,6 +273,7 @@ class FindCarEnv(gym.Env[ObsType[H, W], ActionType], Generic[H, W]):
                 [0, 100, 255], dtype=np.uint8
             ),  # blue-ish
             Content.AGENT.value: np.array([200, 0, 0], dtype=np.uint8),  # red
+            Content.Helper.value: np.array([255, 165, 0], dtype=np.uint8),  # orange
         }
 
         img: np.ndarray[tuple[H, W, Literal[3]], np.dtype[np.uint8]]
