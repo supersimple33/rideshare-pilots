@@ -9,6 +9,7 @@ from game.utils import (
     Location,
     PosInt,
     content_to_one_hot,
+    obscure_cars,
     reachable_window_at,
 )
 
@@ -53,6 +54,23 @@ def local_view_wrapper(
             ),
         }
     )
+
+    return wrapper, obs_space
+
+
+def car_hider_wrapper(obs_space: DictSpace, n: PosInt):
+    """Gets a wrapper that obscures whether a car is a target or not until within n distance."""
+
+    def wrapper(observation: ObsType[PosInt, PosInt]) -> ObsType[PosInt, PosInt]:
+        """A wrapper to convert observations to a local view."""
+
+        return {
+            "agent_position": observation["agent_position"],
+            "board": obscure_cars(
+                observation["board"],
+                n,
+            ),
+        }
 
     return wrapper, obs_space
 

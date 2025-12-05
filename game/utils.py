@@ -1,3 +1,4 @@
+import itertools
 from enum import Enum, auto, unique
 from typing import Annotated, Generic, Literal, TypeAlias, TypeVar, Iterator, Optional
 from collections import deque
@@ -33,6 +34,7 @@ class Content(np.uint8, Enum):
     OBSTACLE = auto()
     TARGET = auto()
     FAKE_TARGET = auto()
+    UNKNOWN_TARGET = auto()
     AGENT = auto()
     Border = auto()
     OutOfSight = auto()
@@ -151,6 +153,31 @@ def reachable_window_at(
             if not visible[y, x] and standard_window[y, x] != pad_value:
                 standard_window[y, x] = Content.OutOfSight  # type: ignore
     return standard_window
+
+
+def obscure_cars(
+    board: np.ndarray[tuple[K, K], np.dtype[DT]],
+    n: PosInt,
+    copy: bool = True,
+) -> np.ndarray[tuple[K, K], np.dtype[DT]]:
+    """Obscure all cars in the board except those within n distance (manhattan) from the center.
+
+    Args:
+        board: The board to obscure.
+        n: The distance from the center to keep cars visible.
+    Returns:
+        The obscured board.
+    """
+    k = board.shape[0]
+    center = (k // 2, k // 2)
+    obscured_board = board.copy() if copy else board
+    for y, x in itertools.product(range(k), range(k)):
+        if (
+            board[y, x] in [Content.TARGET, Content.FAKE_TARGET]
+            and abs(y - center[0]) + abs(x - center[1]) > n
+        ):
+            obscured_board[y, x] = Content.UNKNOWN_TARGET
+    return obscured_board
 
 
 def content_to_one_hot(

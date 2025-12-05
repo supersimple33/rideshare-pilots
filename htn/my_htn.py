@@ -7,12 +7,13 @@ import numpy as np
 from game.FindCarEnv import FindCarEnv, ObsType
 from game.GridGeneration import ObstacleGenerationScheme
 from game.utils import Content, Direction, Location, NonNegInt, PosInt
-from game.wrappers import local_view_wrapper
+from game.wrappers import car_hider_wrapper, local_view_wrapper
 from collections import deque
 
 
 class HTNFindCar(ABC):
-    DEFAULT_N = 3
+    DEFAULT_N = 7
+    DEFAULT_M = 3
     DEFAULT_NUM_FAKE_TARGETS = 0
     DEFAULT_OBSTACLE_SCHEME = None
     DEFAULT_RECORDING_NAME = None
@@ -22,6 +23,7 @@ class HTNFindCar(ABC):
         h: PosInt,
         w: PosInt,
         n: PosInt = DEFAULT_N,
+        m: PosInt = DEFAULT_M,
         num_fake_targets: NonNegInt = DEFAULT_NUM_FAKE_TARGETS,
         obstacle_scheme: ObstacleGenerationScheme | None = DEFAULT_OBSTACLE_SCHEME,
         recording_name: None | str = DEFAULT_RECORDING_NAME,
@@ -36,6 +38,8 @@ class HTNFindCar(ABC):
         )
         wrapper, obs_space = local_view_wrapper(env.observation_space, n)  # type: ignore
         self._env = TransformObservation(env, wrapper, obs_space)
+        wrapper, obs_space = car_hider_wrapper(obs_space, m)
+        self._env = TransformObservation(self._env, wrapper, obs_space)
         if recording_name is not None:
             self._env = RecordVideo(
                 self._env,
@@ -75,6 +79,7 @@ class DictBasedHTN(HTNFindCar, ABC):
         h: PosInt,
         w: PosInt,
         n: PosInt = HTNFindCar.DEFAULT_N,
+        m: PosInt = HTNFindCar.DEFAULT_M,
         num_fake_targets: NonNegInt = HTNFindCar.DEFAULT_NUM_FAKE_TARGETS,
         obstacle_scheme: (
             ObstacleGenerationScheme | None
@@ -175,13 +180,30 @@ class DictBasedHTN(HTNFindCar, ABC):
                 start[0] + dy - n // 2,
                 start[1] + dx - n // 2,
             )
+
+            if (
+                Content(value) == Content.UNKNOWN_TARGET
+                and (y, x) in self._known_spaces
+            ):
+                continue  # don't overwrite known target with unknown
+
             if value not in [Content.OutOfSight, Content.Border]:
                 self._known_spaces[(y, x)] = (
                     value if value != Content.AGENT else Content.EMPTY
                 )
+
             if Content(value) == Content.TARGET and self._target_location is None:
                 self._target_location = np.array([y, x], dtype=np.int32)
                 self._search_path = []
+
+        # Use a lookahead check to make sure the search path is still valid otherwise reset it
+        if self._search_path:
+            next_move = self._search_path[0]
+            next_pos = start + next_move
+            next_cell = self._known_spaces.get((next_pos[0], next_pos[1]))
+            if next_cell not in [Content.EMPTY, Content.TARGET]:
+                self._search_path = []
+
         # grab next action from search path
         self._visited.add((start[0], start[1]))
         if not self._search_path:
