@@ -59,7 +59,7 @@ def local_view_wrapper(
 
 
 def car_hider_wrapper(obs_space: DictSpace, n: PosInt):
-    """Gets a wrapper that obscures whether a car is a target or not until within n distance."""
+    """Gets a wrapper that obscures whether a car is a target or not until within n distance. Unless a helper is within view."""
 
     def wrapper(observation: ObsType[PosInt, PosInt]) -> ObsType[PosInt, PosInt]:
         """A wrapper to convert observations to a local view."""

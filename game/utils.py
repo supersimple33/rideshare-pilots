@@ -170,7 +170,7 @@ def obscure_cars(
     n: PosInt,
     copy: bool = True,
 ) -> np.ndarray[tuple[K, K], np.dtype[DT]]:
-    """Obscure all cars in the board except those within n distance (manhattan) from the center.
+    """Obscure all cars in the board except those within n distance (manhattan) from the center. Unless a helper is within view.
 
     Args:
         board: The board to obscure.
@@ -178,6 +178,8 @@ def obscure_cars(
     Returns:
         The obscured board.
     """
+    if np.any(board == Content.Helper):
+        return board
     k = board.shape[0]
     center = (k // 2, k // 2)
     obscured_board = board.copy() if copy else board
