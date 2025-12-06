@@ -1,0 +1,70 @@
+\usepackage{hyperref}
+\usepackage{xspace}
+
+\newcommand{\tinyurl}[1]{\begin{scriptsize}\url{#1}\end{scriptsize}}
+
+\usepackage{xcolor}
+\newcommand{\bu}[1]{\textbf{\underline{#1}}}
+\newcommand{\rbu}[1]{{\color{red}\textbf{\underline{#1}}}}
+\newcommand{\gap}{\> \>}
+
+
+
+
+%basic planning models
+\newcommand{\action}[2]{\ensuremath{\textnormal{#1}(\textnormal{#2})}\xspace}
+\newcommand{\operator}[2]{\ensuremath{\textnormal{#1}(\textnormal{#2})}\xspace}
+\newcommand{\task}[2]{\ensuremath{\textnormal{#1}}(#2)\xspace}
+\newcommand{\sv}[3]{\ensuremath{\textnormal{#1}(\textnormal{#2})}=\textnormal{#3}\xspace}
+\newcommand{\svdef}[3]{\ensuremath{\textnormal{#1}(\textnormal{#2})\in \textnormal{#3}}\xspace}
+\newcommand{\svnoparam}[2]{\ensuremath{\textnormal{#1}}=\textnormal{#2}\xspace}
+\newcommand{\sr}[2]{\ensuremath{\textnormal{#1}(\textnormal{#2})}\xspace}
+\newcommand{\srdef}[2]{\ensuremath{\textnormal{#1} \subseteq #2}\xspace}
+\newcommand{\predicate}[1]{\ensuremath{\textnormal{#1}}\xspace}
+\newcommand{\pred}[1]{\predicate{#1}}
+
+\newcommand{\method}[1]{\ensuremath{\textnormal{#1}}\xspace}
+\newcommand{\methodfull}[2]{\ensuremath{\textnormal{#1}(#2)}\xspace}
+\newcommand{\name}[1]{\ensuremath{\textnormal{#1}}\xspace}
+\newcommand{\codecomment}[1]{{\small {\em #1}}}
+
+%heuristics
+\newcommand{\hff}{\ensuremath{h^{\textnormal{FF}}}\xspace}
+\newcommand{\hrl}{\ensuremath{h^{\textnormal{RL}}}\xspace}
+
+
+%algorithms
+\newcommand{\alg}[1]{{\fontfamily{qag}\selectfont \textit{#1}}\xspace}
+\newcommand{\Simulate}{\alg{Simulate}}
+\newcommand{\Lookahead}{\alg{Lookahead}}
+\newcommand{\RunLookahead}{\alg{Run-Lookahead}}
+\newcommand{\RunLazyLookahead}{\alg{Run-Lazy-Lookahead}}
+\newcommand{\Frontier}{\alg{Frontier}}
+\newcommand{\TOHTNAct}{\alg{TO-HTN-Act}}
+\newcommand{\HTNRunLookahead}{\alg{HTN-Run-Lookahead}}
+\newcommand{\HTNRunLazyLookahead}{\alg{HTN-Run-Lazy-Lookahead}}
+\newcommand{\TOHTNForward}{\alg{TO-HTN-Forward}}
+\newcommand{\valueiteration}{\alg{VI}}
+\newcommand{\policyiteration}{\alg{PI}}
+\newcommand{\bellmanupdate}{\alg{Bellman-Update}}
+\newcommand{\bfs}{\alg{BFS}}
+\newcommand{\dfs}{\alg{DFS}}
+\newcommand{\gbfs}{\alg{GBFS}}
+\newcommand{\astar}{\alg{A*}}
+\newcommand{\idastar}{\alg{IDA*}}
+\newcommand{\runpolicy}{\alg{Run-Policy}}
+\newcommand{\laostar}{\alg{LAO*}}
+\newcommand{\laostarupdate}{\alg{LAO*-Update}}
+\newcommand{\aostar}{\alg{AO*}}
+\newcommand{\laoupdate}{\alg{LAO-Update}}
+\newcommand{\envelope}{\alg{Envelope}}
+\newcommand{\Envelope}[1]{\envelope \ensuremath{= \{#1\}}}
+\newcommand{\fringe}{\alg{Fringe}}
+\newcommand{\Fringe}[1]{\fringe \ensuremath{ = \{#1\}}}
+\newcommand{\leaves}{\alg{Leaves}}
+\newcommand{\Leaves}[1]{\leaves \ensuremath{ = \{#1\}}}
+
+\newcommand{\frontier}{\alg{Frontier}}
+\newcommand{\select}{\alg{Select}}
+\newcommand{\uct}{\alg{UCT}}
+

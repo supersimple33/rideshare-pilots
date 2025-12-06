@@ -1,0 +1,289 @@
+%File: formatting-instructions-latex-2025.tex
+%release 2025.0
+\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
+\usepackage{aaai25}  % DO NOT CHANGE THIS
+\usepackage{times}  % DO NOT CHANGE THIS
+\usepackage{helvet}  % DO NOT CHANGE THIS
+\usepackage{courier}  % DO NOT CHANGE THIS
+\usepackage[hyphens]{url}  % DO NOT CHANGE THIS
+\usepackage{graphicx} % DO NOT CHANGE THIS
+\urlstyle{rm} % DO NOT CHANGE THIS
+\def\UrlFont{\rm}  % DO NOT CHANGE THIS
+\usepackage{natbib}  % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
+\usepackage{caption} % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
+\frenchspacing  % DO NOT CHANGE THIS
+\setlength{\pdfpagewidth}{8.5in}  % DO NOT CHANGE THIS
+\setlength{\pdfpageheight}{11in}  % DO NOT CHANGE THIS
+%
+% These are recommended to typeset algorithms but not required. See the subsubsection on algorithms. Remove them if you don't have algorithms in your paper.
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{tabularray}
+
+%
+% These are are recommended to typeset listings but not required. See the subsubsection on listing. Remove this block if you don't have listings in your paper.
+\usepackage{newfloat}
+\usepackage{listings}
+\DeclareCaptionStyle{ruled}{labelfont=normalfont,labelsep=colon,strut=off} % DO NOT CHANGE THIS
+\lstset{%
+	basicstyle={\footnotesize\ttfamily},% footnotesize acceptable for monospace
+	numbers=left,numberstyle=\footnotesize,xleftmargin=2em,% show line numbers, remove this entire line if you don't want the numbers.
+	aboveskip=0pt,belowskip=0pt,%
+	showstringspaces=false,tabsize=2,breaklines=true}
+\floatstyle{ruled}
+\newfloat{listing}{tb}{lst}{}
+\floatname{listing}{Listing}
+%
+% Keep the \pdfinfo as shown here. There's no need
+% for you to add the /Title and /Author tags.
+\pdfinfo{
+/TemplateVersion (2025.1)
+}
+
+% DISALLOWED PACKAGES
+% \usepackage{authblk} -- This package is specifically forbidden
+% \usepackage{balance} -- This package is specifically forbidden
+% \usepackage{color (if used in text)
+% \usepackage{CJK} -- This package is specifically forbidden
+% \usepackage{float} -- This package is specifically forbidden
+% \usepackage{flushend} -- This package is specifically forbidden
+% \usepackage{fontenc} -- This package is specifically forbidden
+% \usepackage{fullpage} -- This package is specifically forbidden
+% \usepackage{geometry} -- This package is specifically forbidden
+% \usepackage{grffile} -- This package is specifically forbidden
+% \usepackage{hyperref} -- This package is specifically forbidden
+% \usepackage{navigator} -- This package is specifically forbidden
+% (or any other package that embeds links such as navigator or hyperref)
+% \indentfirst} -- This package is specifically forbidden
+% \layout} -- This package is specifically forbidden
+% \multicol} -- This package is specifically forbidden
+% \nameref} -- This package is specifically forbidden
+% \usepackage{savetrees} -- This package is specifically forbidden
+% \usepackage{setspace} -- This package is specifically forbidden
+% \usepackage{stfloats} -- This package is specifically forbidden
+% \usepackage{tabu} -- This package is specifically forbidden
+% \usepackage{titlesec} -- This package is specifically forbidden
+% \usepackage{tocbibind} -- This package is specifically forbidden
+% \usepackage{ulem} -- This package is specifically forbidden
+% \usepackage{wrapfig} -- This package is specifically forbidden
+% DISALLOWED COMMANDS
+% \nocopyright -- Your paper will not be published if you use this command
+% \addtolength -- This command may not be used
+% \balance -- This command may not be used
+% \baselinestretch -- Your paper will not be published if you use this command
+% \clearpage -- No page breaks of any kind may be used for the final version of your paper
+% \columnsep -- This command may not be used
+% \newpage -- No page breaks of any kind may be used for the final version of your paper
+% \pagebreak -- No page breaks of any kind may be used for the final version of your paperr
+% \pagestyle -- This command may not be used
+% \tiny -- This is not an acceptable font size.
+% \vspace{- -- No negative value may be used in proximity of a caption, figure, table, section, subsection, subsubsection, or reference
+% \vskip{- -- No negative value may be used to alter spacing above or below a caption, figure, table, section, subsection, subsubsection, or reference
+
+\setcounter{secnumdepth}{2} %May be changed to 1 or 2 if section numbers are desired.
+
+% The file aaai25.sty is the style file for AAAI Press
+% proceedings, working notes, and technical reports.
+%
+
+\input{macros}
+
+% Title
+
+% Your title must be in mixed case, not sentence case.
+% That means all verbs (including short verbs like be, is, using,and go),
+% nouns, adverbs, adjectives should be capitalized, including both words in hyphenated terms, while
+% articles, conjunctions, and prepositions are lower case unless they
+% directly follow a colon or long dash
+\title{YOUR PROJECT TITLE}
+\author{
+    Your name\\
+    \href{https://github.com/}{Github link to my project code}
+}
+\affiliations{
+    University of Maryland\\
+    your-email-address@umd.edu
+}
+
+\nocopyright
+\usepackage{tabularray}  % for the assessment table
+
+\begin{document}
+
+\maketitle
+
+\input{checklist-and-assessment}
+
+
+%==========================================================
+%==========================================================
+\section{Introduction}
+
+No abstract is necessary. 
+
+Describe your project and the main goals.
+
+
+%==========================================================
+%==========================================================
+\section{Background}
+
+To the greatest extent possible, your report should be self contained.  This means you should provide any background necessary for understanding your approach.  If you are using an algorithm from the book, say so.  You do not need to include the pseudocode for an algorithm from the book.
+For example, some of you might say something like the following.
+
+This project uses \RunLazyLookahead, \cite{ghallabNauTraverso25.book.apl}, Algorithm~2.4.   Briefly, this acting algorithm checks whether the agent has reached the goal.  If an existing plan exists and \alg{Simulate} is not failure, it performs the next action in the plan.  Otherwise it creates a new plan.  (Notice the use of macros from the `macro.tex` file -- these are optional but can really improve the readability of your report.)
+
+On the other hand, some of you created your own procedures or used something from the literature.  In that case, it might be a good idea to include pseudocode if you modified something from the book or created your own algorithm.  I don't really want you to worry about using the algorithmic environment.  For purposes of this report, I will accept psuedocode `lite', which is basically the text like we have been using all semester, similar to the following:
+\begin{scriptsize}
+\begin{verbatim}
+    procedure CrossPrint(arg1, arg2, arg3)
+    Q := { arg1 x arg2 }
+    while |Q| < arg3:
+        print This statement is false.
+        unused_item = pop(Q)
+\end{verbatim}
+\end{scriptsize}
+
+%==========================================================
+%==========================================================
+\section{Approach}
+
+%--------------------------------
+\subsection{Planning Approach}
+
+%--------------------------------
+\subsection{Acting Approach}
+
+%--------------------------------
+\subsection{Environment}
+
+Include details about your environment. 
+
+If you use a URL link, you can put it in a footnote like this\footnote{\tinyurl{https://www.overleaf.com/learn/latex/}}  Otherwise, cite it as a reference like usual.
+
+%==========================================================
+%==========================================================
+\section{Evaluation Plan}
+
+Discuss the questions you asked and what you were expecting to see.
+
+\paragraph{Independent variables}
+Describe the independent variables you varied.
+
+\paragraph{Dependent variables}
+Describe the dependent variables you measured.
+
+%==========================================================
+%==========================================================
+\section{Results}
+
+Here, simply describe what you found without evaluating it.  You'll reference figures and tables from Section~\ref{sec:figures-and-tables}, as needed. 
+
+%--------------------------------
+\subsection{Discussion of Tradeoffs and Limitations}
+
+Describe the key insights of your results.  Discuss limitations.
+
+
+%==========================================================
+%==========================================================
+\section{What I learned}
+
+Please describe here a few things you learned from this project.  
+
+\begin{itemize}
+    \item \textless replace with new item \textgreater
+    \item \textless replace with new item \textgreater
+    \item \textless replace with new item \textgreater
+    \item \textless replace with new item \textgreater
+\end{itemize}
+
+
+
+\clearpage  %leave this command here so the tables and figures start on a new page
+%==========================================================
+%==========================================================
+\section{Summary Figures and Tables}
+\label{sec:figures-and-tables}
+
+Here is where you will add figures and tables.  
+
+
+
+
+%==========================================================
+%==========================================================
+\bibliography{aaai25}
+
+
+%==========================================================
+%==========================================================
+%==========================================================
+%==========================================================
+\clearpage    %leave this command here so the appendices start on a new page
+\appendix
+
+\begin{center}
+{\Large Appendix}
+\end{center}
+
+Should you need to, you can add sections here for additional content.
+
+%==========================================================
+%==========================================================
+\section{Large Tables or Figures go here}
+
+Table~\ref{tbl:example} shows an example table using the \textbackslash{table*} environment. 
+Similarly, Figure~\ref{fig:example} shows an example large figure using the \textbackslash{figure*} environment.  
+
+\begin{table*}
+\centering
+\begin{tabular}{ |p{3cm}||p{3cm}|p{3cm}|p{3cm}|  }
+ \hline
+ \multicolumn{4}{|c|}{Country List} \\
+ \hline
+ Country Name or Area Name& ISO ALPHA 2 Code &ISO ALPHA 3 Code&ISO numeric Code\\
+ \hline
+ Afghanistan   & AF    &AFG&   004\\
+ Aland Islands&   AX  & ALA   &248\\
+ Albania &AL & ALB&  008\\
+ Algeria    &DZ & DZA&  012\\
+ American Samoa&   AS  & ASM&016\\
+ Andorra& AD  & AND   &020\\
+ Angola& AO  & AGO&024\\
+ Afghanistan   & AF    &AFG&   004\\
+ Aland Islands&   AX  & ALA   &248\\
+ Albania &AL & ALB&  008\\
+ Algeria    &DZ & DZA&  012\\
+ American Samoa&   AS  & ASM&016\\
+ Andorra& AD  & AND   &020\\
+ Angola& AO  & AGO&024\\
+ Afghanistan   & AF    &AFG&   004\\
+ Aland Islands&   AX  & ALA   &248\\
+ Albania &AL & ALB&  008\\
+ Algeria    &DZ & DZA&  012\\
+ American Samoa&   AS  & ASM&016\\
+ Andorra& AD  & AND   &020\\
+ Angola& AO  & AGO&024\\
+ Afghanistan   & AF    &AFG&   004\\
+ Aland Islands&   AX  & ALA   &248\\
+ Albania &AL & ALB&  008\\
+ Algeria    &DZ & DZA&  012\\
+ American Samoa&   AS  & ASM&016\\
+ Andorra& AD  & AND   &020\\
+ Angola& AO  & AGO&024\\
+ \hline
+\end{tabular}
+\caption{Here is a caption for this example table, which came from the overleaf help documents at \tinyurl{https://www.overleaf.com/learn/latex/Tables}.  }
+\label{tbl:example}
+\end{table*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/ssp.png}
+    \caption{Here is a caption for this figure that you probably recognize. }
+    \label{fig:example}
+\end{figure*}
+
+\end{document}
