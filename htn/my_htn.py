@@ -97,6 +97,7 @@ class DictBasedHTN(HTNFindCar, ABC):
             h=h,
             w=w,
             n=n,
+            m=m,
             num_fake_targets=num_fake_targets,
             obstacle_scheme=obstacle_scheme,
             recording_name=recording_name,
