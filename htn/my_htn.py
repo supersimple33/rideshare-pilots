@@ -22,6 +22,7 @@ class HTNFindCar(ABC):
     DEFAULT_N = 7
     DEFAULT_M = 3
     DEFAULT_NUM_FAKE_TARGETS = 0
+    DEFAULT_NUM_HELPERS = 0
     DEFAULT_OBSTACLE_SCHEME = None
     DEFAULT_RECORDING_NAME = None
 
@@ -32,6 +33,7 @@ class HTNFindCar(ABC):
         n: PosInt = DEFAULT_N,
         m: PosInt = DEFAULT_M,
         num_fake_targets: NonNegInt = DEFAULT_NUM_FAKE_TARGETS,
+        nun_helpers: NonNegInt = DEFAULT_NUM_HELPERS,
         obstacle_scheme: ObstacleGenerationScheme | None = DEFAULT_OBSTACLE_SCHEME,
         recording_name: None | str = DEFAULT_RECORDING_NAME,
     ) -> None:
@@ -39,6 +41,7 @@ class HTNFindCar(ABC):
             width=w,
             height=h,
             num_fake_targets=num_fake_targets,
+            num_helpers=nun_helpers,
             render_mode="rgb_array" if recording_name is not None else "human",
             obstacle_scheme=obstacle_scheme,
             check_solvability=True,
@@ -88,6 +91,7 @@ class DictBasedHTN(HTNFindCar, ABC):
         n: PosInt = HTNFindCar.DEFAULT_N,
         m: PosInt = HTNFindCar.DEFAULT_M,
         num_fake_targets: NonNegInt = HTNFindCar.DEFAULT_NUM_FAKE_TARGETS,
+        num_helpers: NonNegInt = HTNFindCar.DEFAULT_NUM_HELPERS,
         obstacle_scheme: (
             ObstacleGenerationScheme | None
         ) = HTNFindCar.DEFAULT_OBSTACLE_SCHEME,
@@ -99,6 +103,7 @@ class DictBasedHTN(HTNFindCar, ABC):
             n=n,
             m=m,
             num_fake_targets=num_fake_targets,
+            nun_helpers=num_helpers,
             obstacle_scheme=obstacle_scheme,
             recording_name=recording_name,
         )
