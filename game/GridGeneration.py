@@ -43,7 +43,7 @@ class NoObstaclesScheme(ObstacleGenerationScheme):
 
 
 class DisjointBlobs(ObstacleGenerationScheme):
-    def __init__(self, max_count: int, max_size: int) -> None:
+    def __init__(self, max_count: int, max_size: int, must_place: bool = False) -> None:
         """Initialize the DisjointBlobs obstacle generation scheme.
         Args:
             blob_count: The number of disjoint blobs to generate.
@@ -51,6 +51,7 @@ class DisjointBlobs(ObstacleGenerationScheme):
         """
         self.blob_count = max_count
         self.blob_size = max_size
+        self.must_place = must_place
 
     def generate_obstacles(
         self,
@@ -118,3 +119,6 @@ class DisjointBlobs(ObstacleGenerationScheme):
             blobs_created += 1
             for by, bx in blob_area:
                 grid[by, bx] = Content.OBSTACLE
+
+        if self.must_place and blobs_created < self.blob_count:
+            raise RuntimeError("Could not place the required number of obstacle blobs.")
