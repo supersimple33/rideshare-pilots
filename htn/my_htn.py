@@ -165,13 +165,6 @@ class DictBasedHTN(HTNFindCar, ABC):
         start = observation["agent_position"]
         n = observation["board"].shape[0]
         # self._env.render()
-        if self._target_location is not None:
-            if not self._search_path:
-                self._search_path = self._generate_search_path(
-                    start=start,
-                    target=self._target_location,
-                )
-            return self._search_path.pop(0)
 
         # update observation dictionary
         value: Content
@@ -205,6 +198,14 @@ class DictBasedHTN(HTNFindCar, ABC):
             next_cell = self._known_spaces.get((next_pos[0], next_pos[1]))
             if next_cell not in [Content.EMPTY, Content.TARGET]:
                 self._search_path = []
+
+        if self._target_location is not None:
+            if not self._search_path:
+                self._search_path = self._generate_search_path(
+                    start=start,
+                    target=self._target_location,
+                )
+            return self._search_path.pop(0)
 
         # grab next action from search path
         self._visited.add((start[0], start[1]))
