@@ -675,3 +675,4 @@ pip-selfcheck.json
 # End of https://www.toptal.com/developers/gitignore/api/latex,tex,macos,python,venv
 
 recordings/
+report/checklist-and-assessment.tex
