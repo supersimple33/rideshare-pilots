@@ -160,7 +160,7 @@ To reduce problem complexity while preserving the core decision structure, agent
 
 The interactive environment was implemented as a gridworld simulator in python using Gymnasium. The environment was hand crafted to allow for easy modification and to ensure a faithful representation of the rideshare pickup task. The environment consist of a grid representing a parking lot with obstacles, a single agent representing the rider, a single target vehicle representing the assigned rideshare car, numerous distractor vehicles representing other cars in the lot, and numerous assistants representing people in the lot who can help the agent find their car. The agent can move in four cardinal directions, observe its surroundings, and gain insights from nearby assistants. The goal of the agent is to find and reach the target vehicle in as few steps as possible. To prevent the planner from exploiting privileged information, all vehicles are rendered indistinguishable up to a certain viewing distance even if obstacles could be seen further beyond. 
 
-When resetting the environment a obstacle generator may be supplied. This generator is responsible for placing obstacles in the environment according to some distribution. The default generator used would take a count of obstacles and their maz size and then uniformly choose random locations to seed the obstacles and then uniformly grow them along the perimeter until they reached their maximum size or were otherwise constrained. 
+When resetting the environment a obstacle generator may be supplied. This generator is responsible for placing obstacles in the environment according to some distribution. The default generator used would take a count of obstacles and their maz size and then uniformly choose random locations to seed the obstacles and then uniformly grow them along the perimeter until they reached their maximum size or were otherwise constrained. It can also be noted that all of the actors are also placed uniformly randomly across the grid. 
 
 The perception of the agent is limited in the following manor. After any given step a $N \times N$ square centered on the agent is extracted and then any point which in non navigable within the area is labelled out of sight. Finally if any in-sight vehicles are outside of a manhattan distance of $M$ from the agent they are labelled as unknown vehicles. This process ensures that the agent can only see a limited area around itself and cannot identify (but can observe) vehicles at a distance. However if an assistant is within the viewing distance of the agent then the assistant can inform the agent of the identity of any in-sight vehicles.
 
@@ -185,13 +185,30 @@ Since the environment is dynamic the content that a given space is associated wi
 %==========================================================
 \section{Evaluation Plan}
 
-Discuss the questions you asked and what you were expecting to see.
+Within the simplified setup described above, venue owners largely have two controls. Firstly they can control the density and prevalence and pattern of obstacles within the parking lot. Secondly they can control the number and distribution of assistants within the parking lot. Therefore we focus our evaluation on how these two independent variables effect the ability of the agent to find their car. As well as how other meta-variables such as the size of the parking lot and the viewing distance of the agent effect performance. This extra analysis is important for better understanding how the environment operates and how different components interact and influence one another. 
 
 \paragraph{Independent variables}
-Describe the independent variables you varied.
+For our first experiment we investigate the effects of obstacle density and size on the ability of the agent to find their car. We vary the following independent variables:
+
+\begin{itemize}
+    \item \textbf{Obstacle occurrence rate:} This variable controls the maximum density of obstacles within the parking lot. We vary this from 1 obstacle to 10 obstacles.
+    \item \textbf{Obstacle size:} This variable controls the maximum size of obstacles within the parking lot. We vary this from small obstacles consisting of 2 blocked spaces up to a size of 20 blocked spaces.
+\end{itemize}
+
+For each of the following experiments we run experiments on each of the following parking lot sizes: a small lot of size $12 \times 12$, a medium lot of size $24 \times 24$, and a large lot of size $36 \times 36$. Additionally for each board size we run the experiment on each of the following combinations of obstacle distributions. This is done to ensure we control that any of the following tested independent variables effects are not due to a preference on the selected obstacle distribution. We ensure across all of the settings that the same number of points are blocked to ensure a fair comparison. The obstacle distributions used are as follows:
+
+\begin{itemize}
+    \item \textbf{Many Dots:} Numerous small obstacles scattered throughout the parking lot.
+    \item \textbf{Normal:} A moderate number of medium sized obstacles scattered throughout the parking lot.
+    \item \textbf{Few Big:} A small number of large obstacles scattered throughout the parking lot.
+\end{itemize}
+
+The first two experiments we run focus on tuning choices of the environment specifically the view size of the agent $N$ and the distance at which a car can be identified $M$. For the first experiment the number of fake targets is kept constant at $5$ and a car can be identified at any distance. For the second experiment the number of fake targets is kept constant at $5$ again and the viewing distance is kept constant at $11 \times 11$. For both experiments we vary the independent variable as follows: rolling the view distance from $3$ to $11$ in increments of $2$ and rolling the identify distance from $1$ to $11$ in increments of $1$.
+
+The final experiment we run focuses on the effects of assistant count on the ability of the agent to find their car. For this experiment we keep the viewing distance at $11 \times 11$, the number of fake targets at $5$, and the identify distance at $3$. We vary the independent variable as follows: rolling the assistant count from $0$ to $7$ in increments of $1$.
 
 \paragraph{Dependent variables}
-Describe the dependent variables you measured.
+The main dependent variable of interest across all experiments is the average number of steps taken by the agent to find their car. This metric directly reflects the efficiency of the agent in completing the task. Furthermore, it is a reasonable proxy for rider searching / walking time in real-world scenarios, which is a critical factor in user satisfaction with rideshare services. By minimizing the number of steps taken to locate the vehicle, we can infer that the agent is effectively navigating the environment and leveraging available resources (like assistants) to optimize its search strategy.
 
 %==========================================================
 %==========================================================
