@@ -220,6 +220,10 @@ The first of the two meta-variable tuning experiments focused on the effects of 
 
 The relationship observed was clearly linear and the relationship can be seen in Table~\ref{tab:radius-linear-fit}. For the small, medium, and large parking lots the cost savings per radius increase was found to be $9.30$, $29.51$, and $50.27$ respectively when averaged across the three obstacle distributions. It is interesting to note that the savings seem as though they may scale linearly with the size of the parking lot as well.
 
+\paragraph{Identification Distance}
+The second of the two meta-variable tuning experiments focused on the effects of identification distance on the ability of the agent to find their car. The results of this experiment can be seen in Figure~\ref{fig:obscurity-all} and Figure~\ref{fig:obscurity-combo}. As expected increasing the identification distance of the agent has a significant positive effect on the ability of the agent to find their car. It seems clear this is due to the fact that with a larger identification distance the agent can more easily identify their car from a distance and thus can make more informed decisions about where to move next and better sort between negative examples and positive examples. Again we see that the effect of identification distance is more pronounced in larger parking lots in terms of the total number of steps saved but worse in terms of percentage improvement. This is likely due to the same reasons as mentioned above. 
+
+The relationship observed appears to be a exponential decay to a asymptote which is dependent on the board size. It can also be noted that the decay rate is much shallower for the larger parking lots. This would seem to indicate that identification distance is especially important in smaller parking lots but that its importance diminishes in larger parking lots where ability to effectively plan more forward thinking routes is more important.
 
 
 %--------------------------------
@@ -285,6 +289,20 @@ Large Big         & -24.33 & 654.07 & 1.00 \\
 \caption{Linear fit parameters for game length vs. diameter across board sizes and obstacle schemes.}
 \label{tab:radius-linear-fit}
 \end{table}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figs/obscurity_all.png}
+    \caption{Effect of identification distance on the ability of the agent to find their car across all trials.}
+    \label{fig:obscurity-all}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figs/obscurity_combo.png}
+    \caption{Effect of identification distance on the ability of the agent to find their car averaged across obstacle distributions.}
+    \label{fig:obscurity-combo}
+\end{figure}
 
 
 %==========================================================
