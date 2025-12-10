@@ -160,11 +160,25 @@ To reduce problem complexity while preserving the core decision structure, agent
 
 The interactive environment was implemented as a gridworld simulator in python using Gymnasium. The environment was hand crafted to allow for easy modification and to ensure a faithful representation of the rideshare pickup task. The environment consist of a grid representing a parking lot with obstacles, a single agent representing the rider, a single target vehicle representing the assigned rideshare car, numerous distractor vehicles representing other cars in the lot, and numerous assistants representing people in the lot who can help the agent find their car. The agent can move in four cardinal directions, observe its surroundings, and gain insights from nearby assistants. The goal of the agent is to find and reach the target vehicle in as few steps as possible. To prevent the planner from exploiting privileged information, all vehicles are rendered indistinguishable up to a certain viewing distance even if obstacles could be seen further beyond. 
 
+When resetting the environment a obstacle generator may be supplied. This generator is responsible for placing obstacles in the environment according to some distribution. The default generator used would take a count of obstacles and their maz size and then uniformly choose random locations to seed the obstacles and then uniformly grow them along the perimeter until they reached their maximum size or were otherwise constrained. 
+
+The perception of the agent is limited in the following manor. After any given step a $N \times N$ square centered on the agent is extracted and then any point which in non navigable within the area is labelled out of sight. Finally if any in-sight vehicles are outside of a manhattan distance of $M$ from the agent they are labelled as unknown vehicles. This process ensures that the agent can only see a limited area around itself and cannot identify (but can observe) vehicles at a distance. However if an assistant is within the viewing distance of the agent then the assistant can inform the agent of the identity of any in-sight vehicles.
+
 %--------------------------------
 \subsection{Planning Approach}
+At the heart of our approach is a simple Hierarchical Task Network (HTN) planner with a few common sense methods for finding the target. 
+The planner is implemented in standard python without the support of any planning libraries. While not directly named the planner has two methods which can be used to form plans: \texttt{navigate\_to\_point}, \texttt{explore\_environment}. These refinement methods use the base actions of \texttt{perceive} and \texttt{move} to form themselves.
+The \texttt{perceive} action allows the agent to look around its current position and identify any vehicles, obstacles, or assistants within its viewing distance. 
+The \texttt{move} action allows the agent to move one step in any of the four cardinal directions, provided there is no obstacle in the way.
+The \texttt{navigate\_to\_point} method allows the agent to create a plan to move to a specific point in the environment using \astar search (it is actually bi-astar since that runs even faster).
+The \texttt{explore\_environment} method allows the agent to create a plan to explore the environment in a systematic way, visiting all points within its viewing distance. 
+Specifically this is done by recursively calling \texttt{navigate\_to\_point} on the nearest unexplored point until the target has been located.
+Once the target has been located, the \texttt{move\_to\_point} method allows the agent to create a plan to move directly to the target vehicle and begin its ride.
 
 %--------------------------------
 \subsection{Acting Approach}
+
+Since the environment is dynamic the content that a given space is associated with may change over time. For example, a car may begin as an unknown space but once perceived it may be identified to be a distractor vehicle. If said distractor vehicle is in the way of the agent's current plan to reach the target vehicle then the plan must be repaired. To handle this dynamic environment we focus on using online methods that interleave the planning and acting. The main acting algorithm is inspired by \HTNRunLookahead. Specifically, at each time step before acting we pop the next move action from the current plan and simulate it. If the simulation is successful (ie the space is safe to move into) then it is executed in the environment. If the simulation fails then a new plan is created from the current state which focuses on identifying a new route to the point of focus. This process continues until the agent reaches the target vehicle.
 
 
 %==========================================================
