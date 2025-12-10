@@ -228,6 +228,10 @@ The relationship observed appears to be a exponential decay to a asymptote which
 \paragraph{Obstacle Count and Size}
 The first of our two main experiments focuses on the effects of obstacle count and size on the ability of the agent to find their car. The results of this experiment can be seen in Figure~\ref{fig:obstacle-distribution}. Interestingly here we see that obstacle count and size has a positive effect on the ability of the agent to find their car. This is interesting as one would expect that the more obstacles there are in the environment the harder it would be for the agent to find their car. However, it seems that the obstacles actually help to structure the environment and provide more information to the agent about where to search. This is likely due to the fact that with more obstacles the agent can better segment the environment into smaller areas and thus can make more informed decisions about where to move next. It is also possible that with more obstacles there are more dead ends and thus the agent can more easily eliminate areas of the environment from consideration. This is supported by the fact that the obstacle count seems to have a greater effect than obstacle size which would make sense as a greater count leads to more segmentations of the environment.
 
+\paragraph{Assistant Count}
+The second of our two main experiments focuses on the effects of assistant count on the ability of the agent to find their car. The results of this experiment can be seen in Figure~\ref{fig:helper-all} and Figure~\ref{fig:helper-combo}. As expected increasing the number of assistants in the environment has a significant positive effect on the ability of the agent to find their car. Much like with the car identification distance this is likely due to the fact that with more assistants the agent can more easily identify their car from a distance and thus can make more informed decisions about where to move next and better sort between negative examples and positive examples. 
+
+In the case of the smaller parking lot nearly all of the benefit is gained by the first assistant with very little gained thereafter. This would seem to suggest that in smaller parking lots a single assistant is sufficient to rapidly speed up the rate at which the agent can find their car. However, in the case of the medium and large parking lots we see that while the first assistant again provides the largest boost in performance there is still significant benefit to be gained from additional assistants (with the large parking lot having the longest tail). Thus it seems that in larger parking lots having multiple assistants is needed to maximally speed up the rate at which the agent can find their car.
 
 %--------------------------------
 \subsection{Discussion of Tradeoffs and Limitations}
@@ -312,6 +316,20 @@ Large Big         & -24.33 & 654.07 & 1.00 \\
     \includegraphics[width=\columnwidth]{figs/obstacle_distribution.png}
     \caption{Effect of obstacle count and size on the ability of the agent to find their car averaged across viewing distances.}
     \label{fig:obstacle-distribution}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figs/helper_all.png}
+    \caption{Effect of assistant count on the ability of the agent to find their car across all trials.}
+    \label{fig:helper-all}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figs/helper_combo.png}
+    \caption{Effect of assistant count on the ability of the agent to find their car averaged across obstacle distributions.}
+    \label{fig:helper-combo}
 \end{figure}
 
 
