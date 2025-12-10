@@ -189,7 +189,7 @@ Since the environment is dynamic the content that a given space is associated wi
 Within the simplified setup described above, venue owners largely have two controls. Firstly they can control the density and prevalence and pattern of obstacles within the parking lot. Secondly they can control the number and distribution of assistants within the parking lot. Therefore we focus our evaluation on how these two independent variables effect the ability of the agent to find their car. As well as how other meta-variables such as the size of the parking lot and the viewing distance of the agent effect performance. This extra analysis is important for better understanding how the environment operates and how different components interact and influence one another. It is important to note here that the distance at which a car can be identified may also be influenced by factors which are within a venues control such as clearly labelling sections of a garage however those improvements and the variable as it is reflected here is not a direct relationship.
 
 \paragraph{Independent variables}
-For our first experiment we investigate the effects of obstacle density and size on the ability of the agent to find their car. We vary the following independent variables:
+For our first experiment we investigate the effects of obstacle density and size on the ability of the agent to find their car. We start with a grid of size $18 \times 18$, view sizes of $9 \times 9$, no obscurity, and no fake targets. We vary the following independent variables:
 
 \begin{itemize}
     \item \textbf{Obstacle occurrence rate:} This variable controls the maximum density of obstacles within the parking lot. We vary this from 1 obstacle to 10 obstacles.
@@ -224,6 +224,9 @@ The relationship observed was clearly linear and the relationship can be seen in
 The second of the two meta-variable tuning experiments focused on the effects of identification distance on the ability of the agent to find their car. The results of this experiment can be seen in Figure~\ref{fig:obscurity-all} and Figure~\ref{fig:obscurity-combo}. As expected increasing the identification distance of the agent has a significant positive effect on the ability of the agent to find their car. It seems clear this is due to the fact that with a larger identification distance the agent can more easily identify their car from a distance and thus can make more informed decisions about where to move next and better sort between negative examples and positive examples. Again we see that the effect of identification distance is more pronounced in larger parking lots in terms of the total number of steps saved but worse in terms of percentage improvement. This is likely due to the same reasons as mentioned above. 
 
 The relationship observed appears to be a exponential decay to a asymptote which is dependent on the board size. It can also be noted that the decay rate is much shallower for the larger parking lots. This would seem to indicate that identification distance is especially important in smaller parking lots but that its importance diminishes in larger parking lots where ability to effectively plan more forward thinking routes is more important.
+
+\paragraph{Obstacle Count and Size}
+The first of our two main experiments focuses on the effects of obstacle count and size on the ability of the agent to find their car. The results of this experiment can be seen in Figure~\ref{fig:obstacle-distribution}. Interestingly here we see that obstacle count and size has a positive effect on the ability of the agent to find their car. This is interesting as one would expect that the more obstacles there are in the environment the harder it would be for the agent to find their car. However, it seems that the obstacles actually help to structure the environment and provide more information to the agent about where to search. This is likely due to the fact that with more obstacles the agent can better segment the environment into smaller areas and thus can make more informed decisions about where to move next. It is also possible that with more obstacles there are more dead ends and thus the agent can more easily eliminate areas of the environment from consideration. This is supported by the fact that the obstacle count seems to have a greater effect than obstacle size which would make sense as a greater count leads to more segmentations of the environment.
 
 
 %--------------------------------
@@ -302,6 +305,13 @@ Large Big         & -24.33 & 654.07 & 1.00 \\
     \includegraphics[width=\columnwidth]{figs/obscurity_combo.png}
     \caption{Effect of identification distance on the ability of the agent to find their car averaged across obstacle distributions.}
     \label{fig:obscurity-combo}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figs/obstacle_distribution.png}
+    \caption{Effect of obstacle count and size on the ability of the agent to find their car averaged across viewing distances.}
+    \label{fig:obstacle-distribution}
 \end{figure}
 
 
