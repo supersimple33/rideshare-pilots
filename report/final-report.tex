@@ -18,6 +18,7 @@
 % These are recommended to typeset algorithms but not required. See the subsubsection on algorithms. Remove them if you don't have algorithms in your paper.
 \usepackage{algorithm}
 \usepackage{algorithmic}
+\usepackage{booktabs}
 
 \hbadness=1500
 \usepackage{tabularray}
@@ -198,7 +199,7 @@ For our first experiment we investigate the effects of obstacle density and size
 For each of the following experiments we run experiments on each of the following parking lot sizes: a small lot of size $12 \times 12$, a medium lot of size $24 \times 24$, and a large lot of size $36 \times 36$. Additionally for each board size we run the experiment on each of the following combinations of obstacle distributions. This is done to ensure we control that any of the following tested independent variables effects are not due to a preference on the selected obstacle distribution. We ensure across all of the settings that the same number of points are blocked to ensure a fair comparison. The obstacle distributions used are as follows:
 
 \begin{itemize}
-    \item \textbf{Many Dots:} Numerous small obstacles scattered throughout the parking lot.
+    \item \textbf{Many Dots:} Numerous small obstacles scattered randomly throughout the parking lot.
     \item \textbf{Normal:} A moderate number of medium sized obstacles scattered throughout the parking lot.
     \item \textbf{Few Big:} A small number of large obstacles scattered throughout the parking lot.
 \end{itemize}
@@ -214,7 +215,12 @@ The main dependent variable of interest across all experiments is the average nu
 %==========================================================
 \section{Results}
 
-Here, simply describe what you found without evaluating it.  You'll reference figures and tables from Section~\ref{sec:figures-and-tables}, as needed. 
+\paragraph{Local View Size}
+The first of the two meta-variable tuning experiments focused on the effects of viewing distance on the ability of the agent to find their car. The results of this experiment can be seen in Figure~\ref{fig:viewing-distance-all} and Figure~\ref{fig:viewing-distance-combo}. As expected increasing the viewing distance of the agent has a significant positive effect on the ability of the agent to find their car. This is almost definitely due to the fact that with a larger viewing distance the agent can see more of the environment at any given time and thus can make more informed decisions about where to move next. It is also interesting to note that the effect of viewing distance is more pronounced in larger parking lots in terms of the total number of steps saved but worse in terms of percentage improvement. This is likely due to the fact that in larger parking lots there is more area to cover and thus the agent can benefit more from being able to see more of the environment at any given time. However, since the total number of steps taken is also larger in larger parking lots, the percentage improvement is smaller. 
+
+The relationship observed was clearly linear and the relationship can be seen in Table~\ref{tab:radius-linear-fit}. For the small, medium, and large parking lots the cost savings per radius increase was found to be $9.30$, $29.51$, and $50.27$ respectively when averaged across the three obstacle distributions. It is interesting to note that the savings seem as though they may scale linearly with the size of the parking lot as well.
+
+
 
 %--------------------------------
 \subsection{Discussion of Tradeoffs and Limitations}
@@ -243,9 +249,42 @@ Please describe here a few things you learned from this project.
 \section{Summary Figures and Tables}
 \label{sec:figures-and-tables}
 
-Here is where you will add figures and tables.  
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figs/view_size_all.png}
+    \caption{Effect of viewing distance on the ability of the agent to find their car across all trials.}
+    \label{fig:viewing-distance-all}
+\end{figure}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figs/view_size_combo.png}
+    \caption{Effect of viewing distance on the ability of the agent to find their car averaged across obstacle distributions.}
+    \label{fig:viewing-distance-combo}
+\end{figure}
 
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\toprule
+\textbf{Board Size / Scheme} & \textbf{Slope} & \textbf{Intercept} & $\mathbf{R^{2}}$ \\
+\midrule
+Small Normal      & -4.80  & 65.38  & 0.98 \\
+Small Many Small  & -4.68  & 64.85  & 0.98 \\
+Small Big         & -4.46  & 62.23  & 0.98 \\
+\midrule
+Medium Normal     & -13.75 & 284.72 & 0.99 \\
+Medium Many Small & -15.26 & 294.45 & 0.99 \\
+Medium Big        & -15.25 & 297.56 & 0.97 \\
+\midrule
+Large Normal      & -25.32 & 664.00 & 0.99 \\
+Large Many Small  & -25.76 & 663.14 & 1.00 \\
+Large Big         & -24.33 & 654.07 & 1.00 \\
+\bottomrule
+\end{tabular}
+\caption{Linear fit parameters for game length vs. diameter across board sizes and obstacle schemes.}
+\label{tab:radius-linear-fit}
+\end{table}
 
 
 %==========================================================
