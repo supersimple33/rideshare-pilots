@@ -11,6 +11,7 @@ dependencies = [
     "gymnasium[other]>=1.2.2",
     "numpy>=2.3.4",
     "pygame>=2.6.1",
+    "scipy>=1.16.3",
     "w9-pathfinding>=0.1.2",
 ]
 
