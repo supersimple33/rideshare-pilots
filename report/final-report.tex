@@ -19,6 +19,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 
+\hbadness=1500
 \usepackage{tabularray}
 
 %
@@ -150,18 +151,21 @@ The main planner for this project is inspired by \HTNRunLookahead, \cite{ghallab
 %==========================================================
 \section{Approach}
 
+The primary methodological challenge in this project was modeling the inherently human element of search and decision-making in the final 100 yards of ride-hailing pickup. Two distinct human factors were addressed: (i) the behavioral characteristics of pedestrian movement [one cannot just walk across a busy street] and (ii) imperfect or incomplete knowledge about the locations of vehicles due to limited perception range.
+
+To reduce problem complexity while preserving the core decision structure, agent movement was discretized to a uniform grid. Although this abstraction does not fully reflect the continuous motion of real life, it allowed the planning model to operate on a tractable state space and supported reproducible experimentation. In addition, the agent was assumed to perceive vehicles in all directions but could only verify the identity of a vehicle only when physically located near it or near a assistant which could direct the agent. This mirrors real-world conditions in which riders may be able to see a vehicle at a distance but cannot confirm that it is their assigned car until they reach it unless otherwise advised. This assumption also constituted a controlled simplification of the visual uncertainty present in practice.
+
+%--------------------------------
+\subsection{Environment}
+
+The interactive environment was implemented as a gridworld simulator in python using Gymnasium. The environment was hand crafted to allow for easy modification and to ensure a faithful representation of the rideshare pickup task. The environment consist of a grid representing a parking lot with obstacles, a single agent representing the rider, a single target vehicle representing the assigned rideshare car, numerous distractor vehicles representing other cars in the lot, and numerous assistants representing people in the lot who can help the agent find their car. The agent can move in four cardinal directions, observe its surroundings, and gain insights from nearby assistants. The goal of the agent is to find and reach the target vehicle in as few steps as possible. To prevent the planner from exploiting privileged information, all vehicles are rendered indistinguishable up to a certain viewing distance even if obstacles could be seen further beyond. 
+
 %--------------------------------
 \subsection{Planning Approach}
 
 %--------------------------------
 \subsection{Acting Approach}
 
-%--------------------------------
-\subsection{Environment}
-
-Include details about your environment. 
-
-If you use a URL link, you can put it in a footnote like this\footnote{\tinyurl{https://www.overleaf.com/learn/latex/}}  Otherwise, cite it as a reference like usual.
 
 %==========================================================
 %==========================================================
